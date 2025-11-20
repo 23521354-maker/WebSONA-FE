@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh mục sản phẩm</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Trang chủ</a>
+            <a href="category.html">Danh mục</a>
+            <a href="cart.html">Giỏ hàng</a>
+            <a href="account.html">Tài khoản</a>
+            <a href="blog.html">Tin tức</a>
+            <a href="chat.html">Hỗ trợ</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Danh mục sản phẩm</h1>
+        <div class="filters">
+            <label>Giá: <input type="range" min="0" max="10000000"></label>
+            <label>Tình trạng:
+                <select>
+                    <option>Còn hàng</option>
+                    <option>Hết hàng</option>
+                </select>
+            </label>
+            <label>Chipset/Socket/Dung lượng:
+                <input type="text" placeholder="Tùy linh kiện">
+            </label>
+            <label>Sắp xếp:
+                <select>
+                    <option>Giá tăng dần</option>
+                    <option>Giá giảm dần</option>
+                    <option>Mới nhất</option>
+                    <option>Bán chạy</option>
+                </select>
+            </label>
+        </div>
+        <section class="product-list">
+            <!-- Danh sách sản phẩm sẽ được thêm ở đây -->
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Sona PC</p>
+    </footer>
+</body>
+</html>
