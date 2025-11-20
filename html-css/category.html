@@ -2,48 +2,181 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Danh mục sản phẩm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh mục sản phẩm - Sona</title>
+    <link rel="icon" type="image/png" href="../img/LEGO web.png">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.html">Trang chủ</a>
-            <a href="category.html">Danh mục</a>
-            <a href="cart.html">Giỏ hàng</a>
-            <a href="account.html">Tài khoản</a>
-            <a href="blog.html">Tin tức</a>
-            <a href="chat.html">Hỗ trợ</a>
-        </nav>
-    </header>
-    <main>
-        <h1>Danh mục sản phẩm</h1>
-        <div class="filters">
-            <label>Giá: <input type="range" min="0" max="10000000"></label>
-            <label>Tình trạng:
-                <select>
-                    <option>Còn hàng</option>
-                    <option>Hết hàng</option>
-                </select>
-            </label>
-            <label>Chipset/Socket/Dung lượng:
-                <input type="text" placeholder="Tùy linh kiện">
-            </label>
-            <label>Sắp xếp:
-                <select>
-                    <option>Giá tăng dần</option>
-                    <option>Giá giảm dần</option>
-                    <option>Mới nhất</option>
-                    <option>Bán chạy</option>
-                </select>
-            </label>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="menu-wrapper">
+                        <button class="menu-toggle" id="menuToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="sidebar-category" id="sidebar">
+                            <div class="sidebar-header">
+                                <i class="fas fa-bars"></i>
+                                <span>DANH MỤC SẢN PHẨM</span>
+                            </div>
+                            <ul class="category-list">
+                                <li><a href="category.html?cat=vga"><i class="fas fa-microchip"></i> VGA - Card đồ họa</a></li>
+                                <li><a href="category.html?cat=cpu"><i class="fas fa-memory"></i> CPU - Bộ vi xử lý</a></li>
+                                <li><a href="category.html?cat=ram"><i class="fas fa-memory"></i> RAM - Bộ nhớ</a></li>
+                                <li><a href="category.html?cat=ssd"><i class="fas fa-hdd"></i> SSD - Ổ cứng</a></li>
+                                <li><a href="category.html?cat=hdd"><i class="fas fa-database"></i> HDD - Ổ cứng</a></li>
+                                <li><a href="category.html?cat=mainboard"><i class="fas fa-th"></i> Mainboard</a></li>
+                                <li><a href="category.html?cat=psu"><i class="fas fa-plug"></i> Nguồn máy tính</a></li>
+                                <li><a href="category.html?cat=case"><i class="fas fa-desktop"></i> Case máy tính</a></li>
+                                <li><a href="category.html?cat=cooling"><i class="fas fa-fan"></i> Tản nhiệt</a></li>
+                                <li><a href="category.html?cat=monitor"><i class="fas fa-tv"></i> Màn hình</a></li>
+                                <li><a href="category.html?cat=keyboard"><i class="fas fa-keyboard"></i> Bàn phím</a></li>
+                                <li><a href="category.html?cat=mouse"><i class="fas fa-mouse"></i> Chuột</a></li>
+                                <li><a href="category.html?cat=headset"><i class="fas fa-headphones"></i> Tai nghe</a></li>
+                                <li><a href="category.html?cat=accessories"><i class="fas fa-puzzle-piece"></i> Phụ kiện khác</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="logo">
+                        <a href="index.html">
+                            <img src="../img/hình SONA.png" alt="Sona Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="header-icons">
+                    <i class="fas fa-search"></i>
+                    <a href="cart.html" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                    <a href="login.html"><i class="fas fa-user"></i></a>
+                </div>
+            </div>
         </div>
-        <section class="product-list">
-            <!-- Danh sách sản phẩm sẽ được thêm ở đây -->
-        </section>
+    </header>
+
+    <main>
+        <div class="container">
+            <h1 class="page-title" id="categoryTitle">Danh mục sản phẩm</h1>
+            
+            <div class="category-layout">
+                <!-- Sidebar Filters -->
+                <aside class="filter-sidebar">
+                    <button class="filter-toggle" id="filterToggle">
+                        <i class="fas fa-bars"></i> Bộ lọc tìm kiếm
+                    </button>
+                    
+                    <div class="filter-content" id="filterContent">
+                        <!-- Hãng sản xuất -->
+                        <div class="filter-section collapsed">
+                            <h3 class="filter-title">Hãng sản xuất <i class="fas fa-chevron-down"></i></h3>
+                            <div class="filter-options" style="display: none;">
+                                <!-- Brands will be dynamically loaded by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Mức giá -->
+                        <div class="filter-section collapsed">
+                            <h3 class="filter-title">Mức giá <i class="fas fa-chevron-down"></i></h3>
+                            <div class="filter-options" style="display: none;">
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="price" value="all" checked>
+                                    <span>Tất cả</span>
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="price" value="0-5">
+                                    <span>Dưới 5 triệu</span>
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="price" value="5-10">
+                                    <span>Từ 5 - 10 triệu</span>
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="price" value="10-15">
+                                    <span>Từ 10 - 15 triệu</span>
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="price" value="15-20">
+                                    <span>Từ 15 - 20 triệu</span>
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="price" value="20-25">
+                                    <span>Từ 20 - 25 triệu</span>
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="price" value="25-30">
+                                    <span>Từ 25 - 30 triệu</span>
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="price" value="30+">
+                                    <span>Trên 30 triệu</span>
+                                </label>
+                            </div>
+                            
+                            <div class="price-range-input" style="display: none;">
+                                <p>Hoặc nhập khoảng giá phù hợp với bạn:</p>
+                                <div class="price-inputs">
+                                    <input type="text" id="minPrice" placeholder="16.990.000₫" value="16.990.000">
+                                    <span>~</span>
+                                    <input type="text" id="maxPrice" placeholder="139.390.000₫" value="139.390.000">
+                                </div>
+                                <input type="range" class="price-slider" min="0" max="150000000" step="1000000">
+                            </div>
+                        </div>
+
+                        <!-- Tình trạng -->
+                        <div class="filter-section collapsed">
+                            <h3 class="filter-title">Tình trạng <i class="fas fa-chevron-down"></i></h3>
+                            <div class="filter-options" style="display: none;">
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="status" value="available">
+                                    <span class="checkmark"></span>
+                                    <span>Còn hàng</span>
+                                </label>
+                                <label class="filter-checkbox">
+                                    <input type="checkbox" name="status" value="out-of-stock">
+                                    <span class="checkmark"></span>
+                                    <span>Hết hàng</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Product Content -->
+                <div class="product-content">
+                    <div class="sort-bar">
+                        <span class="result-count">Hiển thị 1-12 trong 48 sản phẩm</span>
+                        <select class="sort-select">
+                            <option>Mới nhất</option>
+                            <option>Giá tăng dần</option>
+                            <option>Giá giảm dần</option>
+                            <option>Bán chạy nhất</option>
+                        </select>
+                    </div>
+
+                    <section class="product-grid" id="productList">
+                        <!-- Các sản phẩm sẽ được load động bằng JavaScript -->
+                    </section>
+                </div>
+            </div>
+        </div>
     </main>
-    <footer>
-        <p>&copy; 2025 Sona PC</p>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Sona - Máy tính và Phụ kiện công nghệ</p>
+            <div class="zalo-icon">
+                <i class="fab fa-facebook-messenger"></i> Zalo
+            </div>
+        </div>
     </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>

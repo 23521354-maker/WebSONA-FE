@@ -2,40 +2,376 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Giỏ hàng</title>
+    <title>Giỏ hàng - Sona</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../img/LEGO web.png">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #f0f2f5;
+        }
+        .cart-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 24px;
+            align-items: start;
+        }
+        .cart-main {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .cart-main h1 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .cart-table thead {
+            background: #fff;
+        }
+        .cart-table th {
+            text-align: left;
+            padding: 12px 8px;
+            font-weight: 600;
+            color: #fff;
+            font-size: 0.95rem;
+            border: none;
+        }
+        .cart-table tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .cart-table td {
+            padding: 20px 8px;
+            vertical-align: middle;
+            border: none;
+        }
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: #f8f8f8;
+        }
+        .cart-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .cart-item-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .cart-item-specs {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        .cart-item-price {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.05rem;
+        }
+        .cart-quantity {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .cart-quantity button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #333;
+            transition: all 0.2s;
+            border-right: 1px solid #ddd;
+        }
+        .cart-quantity button:last-child {
+            border-right: none;
+            border-left: 1px solid #ddd;
+        }
+        .cart-quantity button:hover {
+            background: #f0f0f0;
+        }
+        .cart-quantity input {
+            width: 50px;
+            height: 36px;
+            text-align: center;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cart-delete {
+            color: #999;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        .cart-delete:hover {
+            color: #ff0000;
+        }
+        .cart-summary {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 100px;
+        }
+        .cart-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-size: 1rem;
+        }
+        .cart-summary-row.total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            padding-top: 16px;
+            border-top: 2px solid #e0e0e0;
+        }
+        .cart-summary-row.total .price {
+            color: #0066ff;
+        }
+        .cart-agreement {
+            margin: 20px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .cart-agreement input {
+            margin-top: 2px;
+            flex-shrink: 0;
+            accent-color: #9b4dca;
+            width: 18px;
+            height: 18px;
+        }
+        .cart-agreement label {
+            flex: 1;
+            text-align: justify;
+        }
+        .cart-agreement a {
+            color: #0066ff;
+            text-decoration: none;
+        }
+        .cart-checkout-btn {
+            width: 100%;
+            background: #0066ff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .cart-checkout-btn:hover {
+            background: #0052cc;
+        }
+        .cart-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .cart-action-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #0066ff;
+            background: #fff;
+            color: #0066ff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .cart-action-btn:hover {
+            background: #f0f7ff;
+        }
+        @media (max-width: 992px) {
+            .cart-container {
+                grid-template-columns: 1fr;
+            }
+            .cart-summary {
+                position: static;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.html">Trang chủ</a>
-            <a href="category.html">Danh mục</a>
-            <a href="cart.html">Giỏ hàng</a>
-            <a href="account.html">Tài khoản</a>
-            <a href="blog.html">Tin tức</a>
-            <a href="chat.html">Hỗ trợ</a>
-        </nav>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="menu-wrapper">
+                        <button class="menu-toggle" id="menuToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="sidebar-category" id="sidebar">
+                            <div class="sidebar-header">
+                                <i class="fas fa-bars"></i>
+                                <span>DANH MỤC SẢN PHẨM</span>
+                            </div>
+                            <ul class="category-list">
+                                <li><a href="category.html?cat=vga"><i class="fas fa-microchip"></i> VGA - Card đồ họa</a></li>
+                                <li><a href="category.html?cat=cpu"><i class="fas fa-memory"></i> CPU - Bộ vi xử lý</a></li>
+                                <li><a href="category.html?cat=ram"><i class="fas fa-memory"></i> RAM - Bộ nhớ</a></li>
+                                <li><a href="category.html?cat=ssd"><i class="fas fa-hdd"></i> SSD - Ổ cứng</a></li>
+                                <li><a href="category.html?cat=hdd"><i class="fas fa-database"></i> HDD - Ổ cứng</a></li>
+                                <li><a href="category.html?cat=mainboard"><i class="fas fa-th"></i> Mainboard</a></li>
+                                <li><a href="category.html?cat=psu"><i class="fas fa-plug"></i> Nguồn máy tính</a></li>
+                                <li><a href="category.html?cat=case"><i class="fas fa-desktop"></i> Case máy tính</a></li>
+                                <li><a href="category.html?cat=cooling"><i class="fas fa-fan"></i> Tản nhiệt</a></li>
+                                <li><a href="category.html?cat=monitor"><i class="fas fa-tv"></i> Màn hình</a></li>
+                                <li><a href="category.html?cat=keyboard"><i class="fas fa-keyboard"></i> Bàn phím</a></li>
+                                <li><a href="category.html?cat=mouse"><i class="fas fa-mouse"></i> Chuột</a></li>
+                                <li><a href="category.html?cat=headset"><i class="fas fa-headphones"></i> Tai nghe</a></li>
+                                <li><a href="category.html?cat=accessories"><i class="fas fa-puzzle-piece"></i> Phụ kiện khác</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="logo">
+                        <a href="index.html">
+                            <img src="../img/hình SONA.png" alt="Sona Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="header-icons">
+                    <i class="fas fa-search"></i>
+                    <a href="cart.html" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">1</span>
+                    </a>
+                    <a href="login.html"><i class="fas fa-user"></i></a>
+                </div>
+            </div>
+        </div>
     </header>
-    <main>
-        <h1>Giỏ hàng của bạn</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Sản phẩm</th>
-                    <th>Số lượng</th>
-                    <th>Giá</th>
-                    <th>Xóa</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Sản phẩm trong giỏ sẽ được thêm ở đây -->
-            </tbody>
-        </table>
-        <p>Tổng tiền: <span>0đ</span></p>
-        <a href="checkout.html"><button>Thanh toán</button></a>
-    </main>
-    <footer>
-        <p>&copy; 2025 Sona PC</p>
+
+    <!-- Cart Content -->
+    <div class="cart-container">
+        <div class="cart-main">
+            <h1>Giỏ hàng của bạn</h1>
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá bán</th>
+                        <th>Số lượng</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <img src="../img/thinkbook14.png" alt="ThinkPad" class="cart-item-image">
+                        </td>
+                        <td>
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">ThinkPad P16s 2025 (Ultra 7-265H vPro| 32GB RAM| 1TB SSD| RTX Pro 1000)</div>
+                                <div class="cart-item-specs">(CPU: Ultra 7-265H vPro, RAM: 32GB, SSD: 1TB, Card Đồ Họa: RTX Pro 1000)</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cart-item-price">58,800,000₫</div>
+                        </td>
+                        <td>
+                            <div class="cart-quantity">
+                                <button onclick="decreaseQuantity()">-</button>
+                                <input type="number" value="1" min="1" id="quantity">
+                                <button onclick="increaseQuantity()">+</button>
+                            </div>
+                        </td>
+                        <td>
+                            <i class="fas fa-trash cart-delete" onclick="removeItem()"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="cart-actions">
+                <button class="cart-action-btn">Cập nhật giỏ hàng</button>
+                <button class="cart-action-btn">Tiếp tục mua sắm</button>
+            </div>
+        </div>
+
+        <div class="cart-summary">
+            <div class="cart-summary-row">
+                <span>Tổng phụ:</span>
+                <span class="price">58,800,000₫</span>
+            </div>
+            <div class="cart-summary-row total">
+                <span>Tổng cộng:</span>
+                <span class="price">58,800,000₫</span>
+            </div>
+            <div class="cart-agreement">
+                <input type="checkbox" id="agreement" checked>
+                <label for="agreement">Tôi đã đọc và đồng ý với <a href="#">điều khoản và điều kiện</a> của website</label>
+            </div>
+            <button class="cart-checkout-btn" onclick="checkout()">Tiến hành đặt hàng</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Sona - Máy tính và Phụ kiện công nghệ</p>
+            <div class="zalo-icon">
+                <i class="fab fa-facebook-messenger"></i> Zalo
+            </div>
+        </div>
     </footer>
+
+    <script src="script.js"></script>
+    <script>
+        function increaseQuantity() {
+            const input = document.getElementById('quantity');
+            input.value = parseInt(input.value) + 1;
+        }
+
+        function decreaseQuantity() {
+            const input = document.getElementById('quantity');
+            if (parseInt(input.value) > 1) {
+                input.value = parseInt(input.value) - 1;
+            }
+        }
+
+        function removeItem() {
+            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                alert('Sản phẩm đã được xóa khỏi giỏ hàng');
+            }
+        }
+
+        function checkout() {
+            const agreement = document.getElementById('agreement');
+            if (!agreement.checked) {
+                alert('Vui lòng đồng ý với điều khoản và điều kiện');
+                return;
+            }
+            window.location.href = 'checkout.html';
+        }
+    </script>
 </body>
 </html>

@@ -2,31 +2,252 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng nhập</title>
+    <title>Đăng nhập - Sona</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../img/LEGO web.png">
     <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #f0f2f5;
+        }
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f2f5;
+        }
+        .login-left {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+            color: #fff;
+            width: 480px;
+            min-height: 520px;
+            border-radius: 18px 0 0 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        .login-left .logo {
+            margin-bottom: 32px;
+        }
+        .login-left .logo img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(255,0,0,0.08);
+        }
+        .login-left h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+        }
+        .login-left ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 18px 0;
+        }
+        .login-left ul li {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .login-left ul li i {
+            color: #ff0000;
+            font-size: 1.1em;
+        }
+        .login-left .desc {
+            color: #ff0000;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        .login-right {
+            background: #fff;
+            width: 400px;
+            min-height: 520px;
+            border-radius: 0 18px 18px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            padding: 48px 32px;
+        }
+        .login-right h1 {
+            color: #e60000;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 28px;
+        }
+        .login-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .login-form label {
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        .login-form input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #f8f8f8;
+            transition: border 0.2s;
+        }
+        .login-form input:focus {
+            border: 1.5px solid #ff0000;
+            outline: none;
+        }
+        .login-form button {
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+        .login-form button:hover {
+            background: #cc0000;
+        }
+        .login-right .login-links {
+            margin-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.98rem;
+        }
+        .login-right .login-links a {
+            color: #ff0000;
+            text-decoration: none;
+        }
+        .login-right .login-links a:hover {
+            text-decoration: underline;
+        }
+        .login-right .register-link {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .login-right .register-link a {
+            color: #ff0000;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .login-right .register-link a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 900px) {
+            .login-wrapper {
+                flex-direction: column;
+            }
+            .login-left, .login-right {
+                width: 100%;
+                border-radius: 18px 18px 0 0;
+                min-height: unset;
+            }
+            .login-right {
+                border-radius: 0 0 18px 18px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.html">Trang chủ</a>
-            <a href="category.html">Danh mục</a>
-            <a href="cart.html">Giỏ hàng</a>
-            <a href="account.html">Tài khoản</a>
-            <a href="blog.html">Tin tức</a>
-            <a href="chat.html">Hỗ trợ</a>
-        </nav>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="menu-wrapper">
+                        <button class="menu-toggle" id="menuToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="sidebar-category" id="sidebar">
+                            <div class="sidebar-header">
+                                <i class="fas fa-bars"></i>
+                                <span>DANH MỤC SẢN PHẨM</span>
+                            </div>
+                            <ul class="category-list">
+                                <li><a href="category.html?cat=vga"><i class="fas fa-microchip"></i> VGA - Card đồ họa</a></li>
+                                <li><a href="category.html?cat=cpu"><i class="fas fa-memory"></i> CPU - Bộ vi xử lý</a></li>
+                                <li><a href="category.html?cat=ram"><i class="fas fa-memory"></i> RAM - Bộ nhớ</a></li>
+                                <li><a href="category.html?cat=ssd"><i class="fas fa-hdd"></i> SSD - Ổ cứng</a></li>
+                                <li><a href="category.html?cat=hdd"><i class="fas fa-database"></i> HDD - Ổ cứng</a></li>
+                                <li><a href="category.html?cat=mainboard"><i class="fas fa-th"></i> Mainboard</a></li>
+                                <li><a href="category.html?cat=psu"><i class="fas fa-plug"></i> Nguồn máy tính</a></li>
+                                <li><a href="category.html?cat=case"><i class="fas fa-desktop"></i> Case máy tính</a></li>
+                                <li><a href="category.html?cat=cooling"><i class="fas fa-fan"></i> Tản nhiệt</a></li>
+                                <li><a href="category.html?cat=monitor"><i class="fas fa-tv"></i> Màn hình</a></li>
+                                <li><a href="category.html?cat=keyboard"><i class="fas fa-keyboard"></i> Bàn phím</a></li>
+                                <li><a href="category.html?cat=mouse"><i class="fas fa-mouse"></i> Chuột</a></li>
+                                <li><a href="category.html?cat=headset"><i class="fas fa-headphones"></i> Tai nghe</a></li>
+                                <li><a href="category.html?cat=accessories"><i class="fas fa-puzzle-piece"></i> Phụ kiện khác</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="logo">
+                        <a href="index.html">
+                            <img src="../img/hình SONA.png" alt="Sona Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="header-icons">
+                    <i class="fas fa-search"></i>
+                    <a href="cart.html" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+                    <a href="login.html"><i class="fas fa-user"></i></a>
+                </div>
+            </div>
+        </div>
     </header>
-    <main>
-        <h1>Đăng nhập khách hàng</h1>
-        <form>
-            <label>Email/SĐT: <input type="text" required></label><br>
-            <label>Mật khẩu: <input type="password" required></label><br>
-            <button type="submit">Đăng nhập</button>
-        </form>
-        <a href="register.html">Đăng ký</a> | <a href="#">Quên mật khẩu?</a>
-    </main>
-    <footer>
-        <p>&copy; 2025 Sona PC</p>
-    </footer>
+    <div class="login-wrapper">
+        <div class="login-left">
+            <div class="logo">
+                <img src="../img/hình SONA.png" alt="Sona Logo">
+            </div>
+            <h2>Chào mừng đến với SONA</h2>
+            <ul>
+                <li><i class="fas fa-gift"></i> Ưu đãi thành viên hấp dẫn</li>
+                <li><i class="fas fa-truck"></i> Giao hàng nhanh toàn quốc</li>
+                <li><i class="fas fa-shield-alt"></i> Bảo hành chính hãng</li>
+                <li><i class="fas fa-headset"></i> Hỗ trợ 24/7</li>
+            </ul>
+            <div class="desc">Đăng nhập để nhận nhiều quyền lợi hơn!</div>
+        </div>
+        <div class="login-right">
+            <h1>Đăng nhập tài khoản</h1>
+            <form class="login-form">
+                <div>
+                    <label for="login-username">Email/Số điện thoại</label>
+                    <input id="login-username" type="text" placeholder="Nhập email hoặc số điện thoại" required>
+                </div>
+                <div>
+                    <label for="login-password">Mật khẩu</label>
+                    <input id="login-password" type="password" placeholder="Nhập mật khẩu" required>
+                </div>
+                <button type="submit">Đăng nhập</button>
+            </form>
+            <div class="login-links">
+                <a href="#">Quên mật khẩu?</a>
+            </div>
+            <div class="register-link">
+                Chưa có tài khoản? <a href="register.html">Đăng ký ngay</a>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
