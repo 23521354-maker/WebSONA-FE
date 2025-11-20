@@ -137,21 +137,29 @@
         .product-table {
             width: 100%;
             margin-bottom: 20px;
+            border-collapse: collapse;
         }
         .product-table thead {
-            background: #f8f8f8;
+            background: #1a1a1a;
         }
         .product-table th {
             text-align: left;
-            padding: 10px 8px;
+            padding: 12px 8px;
             font-weight: 600;
             font-size: 0.9rem;
-            color: #333;
+            color: #fff;
+            border: none;
         }
         .product-table td {
             padding: 15px 8px;
             vertical-align: middle;
+            border: none;
+        }
+        .product-table tbody tr {
             border-bottom: 1px solid #f0f0f0;
+        }
+        .product-table tbody tr:last-child {
+            border-bottom: none;
         }
         .product-table img {
             width: 60px;
