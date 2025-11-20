@@ -191,25 +191,10 @@ body {
 .header-icons i {
     cursor: pointer;
     transition: transform 0.3s;
-    color: #fff;
 }
 
 .header-icons i:hover {
     transform: scale(1.1);
-    color: #fff;
-}
-
-.header-icons a {
-    color: #fff;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-}
-
-.header-icons a:visited,
-.header-icons a:active,
-.header-icons a:focus {
-    color: #fff;
 }
 
 .cart-icon {
@@ -729,15 +714,31 @@ th {
     width: 20px;
     height: 20px;
     cursor: pointer;
-    accent-color: #ff0000;
-    flex-shrink: 0;
-    margin: 0;
 }
 
-.filter-checkbox span {
+.filter-checkbox .checkmark {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.filter-checkbox input[type="checkbox"]:checked ~ .checkmark {
+    background: #ff0000;
+    border-color: #ff0000;
+}
+
+.filter-checkbox input[type="checkbox"]:checked ~ .checkmark::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
     font-size: 14px;
-    color: #333;
-    line-height: 20px;
 }
 
 /* Price Range Input */
