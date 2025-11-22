@@ -2,33 +2,370 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng ký</title>
+    <title>Đăng ký - Sona</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../img/LEGO web.png">
     <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #f0f2f5;
+        }
+        .register-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            background: #f0f2f5;
+            padding: 40px 20px;
+        }
+        .register-left {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000 100%);
+            color: #fff;
+            width: 480px;
+            border-radius: 18px 0 0 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        .register-left .logo {
+            margin-bottom: 32px;
+        }
+        .register-left .logo img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(255,0,0,0.08);
+        }
+        .register-left h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+        }
+        .register-left ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 18px 0;
+        }
+        .register-left ul li {
+            margin-bottom: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .register-left ul li i {
+            color: #ff0000;
+            font-size: 1.1em;
+        }
+        .register-left .desc {
+            color: #ff0000;
+            font-weight: 500;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .register-right {
+            background: #fff;
+            width: 480px;
+            border-radius: 0 18px 18px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            padding: 48px 40px;
+        }
+        .register-right h1 {
+            color: #e60000;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 28px;
+        }
+        .register-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .register-form .form-row {
+            display: flex;
+            gap: 16px;
+        }
+        .register-form .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .register-form label {
+            font-weight: 500;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+        .register-form input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.98rem;
+            background: #f8f8f8;
+            transition: border 0.2s;
+        }
+        .register-form input:focus {
+            border: 1.5px solid #ff0000;
+            outline: none;
+        }
+        .register-form button {
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+        .register-form button:hover {
+            background: #cc0000;
+        }
+        .register-right .login-link {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .register-right .login-link a {
+            color: #ff0000;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .register-right .login-link a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 1000px) {
+            .register-wrapper {
+                flex-direction: column;
+            }
+            .register-left, .register-right {
+                width: 100%;
+                max-width: 500px;
+                border-radius: 18px 18px 0 0;
+                min-height: unset;
+            }
+            .register-right {
+                border-radius: 0 0 18px 18px;
+            }
+            .register-form .form-row {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.html">Trang chủ</a>
-            <a href="category.html">Danh mục</a>
-            <a href="cart.html">Giỏ hàng</a>
-            <a href="account.html">Tài khoản</a>
-            <a href="blog.html">Tin tức</a>
-            <a href="chat.html">Hỗ trợ</a>
-        </nav>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="menu-wrapper">
+                        <button class="menu-toggle" id="menuToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="sidebar-category" id="sidebar">
+                            <div class="sidebar-header">
+                                <i class="fas fa-bars"></i>
+                                <span>DANH MỤC SẢN PHẨM</span>
+                            </div>
+                            <ul class="category-list">
+                                <li><a href="category.html?cat=vga"><i class="fas fa-microchip"></i> VGA - Card đồ họa</a></li>
+                                <li><a href="category.html?cat=cpu"><i class="fas fa-memory"></i> CPU - Bộ vi xử lý</a></li>
+                                <li><a href="category.html?cat=ram"><i class="fas fa-memory"></i> RAM - Bộ nhớ</a></li>
+                                <li><a href="category.html?cat=ssd"><i class="fas fa-hdd"></i> SSD - Ổ cứng</a></li>
+                                <li><a href="category.html?cat=hdd"><i class="fas fa-database"></i> HDD - Ổ cứng</a></li>
+                                <li><a href="category.html?cat=mainboard"><i class="fas fa-th"></i> Mainboard</a></li>
+                                <li><a href="category.html?cat=psu"><i class="fas fa-plug"></i> Nguồn máy tính</a></li>
+                                <li><a href="category.html?cat=case"><i class="fas fa-desktop"></i> Case máy tính</a></li>
+                                <li><a href="category.html?cat=cooling"><i class="fas fa-fan"></i> Tản nhiệt</a></li>
+                                <li><a href="category.html?cat=monitor"><i class="fas fa-tv"></i> Màn hình</a></li>
+                                <li><a href="category.html?cat=keyboard"><i class="fas fa-keyboard"></i> Bàn phím</a></li>
+                                <li><a href="category.html?cat=mouse"><i class="fas fa-mouse"></i> Chuột</a></li>
+                                <li><a href="category.html?cat=headset"><i class="fas fa-headphones"></i> Tai nghe</a></li>
+                                <li><a href="category.html?cat=accessories"><i class="fas fa-puzzle-piece"></i> Phụ kiện khác</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="logo">
+                        <a href="index.html">
+                            <img src="../img/hình SONA.png" alt="Sona Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="header-icons">
+                    <i class="fas fa-search"></i>
+                    <a href="cart.html" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+                    <a href="login.html"><i class="fas fa-user"></i></a>
+                </div>
+            </div>
+        </div>
     </header>
-    <main>
-        <h1>Đăng ký khách hàng</h1>
-        <form>
-            <label>Họ tên: <input type="text" required></label><br>
-            <label>Email: <input type="email" required></label><br>
-            <label>SĐT: <input type="text" required></label><br>
-            <label>Mật khẩu: <input type="password" required></label><br>
-            <button type="submit">Đăng ký</button>
-        </form>
-        <a href="login.html">Đã có tài khoản? Đăng nhập</a>
-    </main>
-    <footer>
-        <p>&copy; 2025 Sona PC</p>
-    </footer>
+    <div class="register-wrapper">
+        <div class="register-left">
+            <div class="logo">
+                <img src="../img/hình SONA.png" alt="Sona Logo">
+            </div>
+            <h2>Gia nhập SONA ngay hôm nay</h2>
+            <ul>
+                <li><i class="fas fa-gift"></i> Ưu đãi thành viên hấp dẫn</li>
+                <li><i class="fas fa-truck"></i> Giao hàng nhanh toàn quốc</li>
+                <li><i class="fas fa-shield-alt"></i> Bảo hành chính hãng</li>
+                <li><i class="fas fa-headset"></i> Hỗ trợ 24/7</li>
+                <li><i class="fas fa-tags"></i> Giảm giá đặc biệt cho thành viên</li>
+            </ul>
+            <div class="desc">Đăng ký để trải nghiệm mua sắm tuyệt vời!</div>
+        </div>
+        <div class="register-right">
+            <h1>Tạo tài khoản mới</h1>
+            <form class="register-form">
+                <div class="form-group">
+                    <label for="fullname">Họ và tên <span style="color: red;">*</span></label>
+                    <input id="fullname" type="text" placeholder="Nguyễn Văn A" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email <span style="color: red;">*</span></label>
+                        <input id="email" type="email" placeholder="example@gmail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Số điện thoại <span style="color: red;">*</span></label>
+                        <input id="phone" type="tel" placeholder="0912345678" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="address">Địa chỉ <span style="color: red;">*</span></label>
+                    <input id="address" type="text" placeholder="Số nhà, đường, phường, quận/huyện, tỉnh/thành phố" required>
+                </div>
+                <div class="form-group">
+                    <label for="birthdate">Ngày sinh <span style="color: red;">*</span></label>
+                    <input id="birthdate" type="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">Tên tài khoản <span style="color: red;">*</span></label>
+                    <input id="username" type="text" placeholder="Chọn tên đăng nhập" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Mật khẩu <span style="color: red;">*</span></label>
+                        <input id="password" type="password" placeholder="Tối thiểu 8 ký tự" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Xác nhận mật khẩu <span style="color: red;">*</span></label>
+                        <input id="confirm-password" type="password" placeholder="Nhập lại mật khẩu" required>
+                    </div>
+                </div>
+                <button type="submit">Đăng ký tài khoản</button>
+            </form>
+            <div class="login-link">
+                Đã có tài khoản? <a href="login.html">Đăng nhập ngay</a>
+            </div>
+        </div>
+    </div>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (menuToggle && sidebar) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!menuToggle.contains(e.target) && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        }
+
+        // Xử lý đăng ký
+        const registerForm = document.querySelector('.register-form');
+        if (registerForm) {
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const fullname = document.getElementById('fullname').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const address = document.getElementById('address').value;
+                const birthdate = document.getElementById('birthdate').value;
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                const submitBtn = registerForm.querySelector('button[type="submit"]');
+                
+                // Kiểm tra mật khẩu khớp
+                if (password !== confirmPassword) {
+                    alert('Mật khẩu xác nhận không khớp!');
+                    return;
+                }
+                
+                // Kiểm tra độ dài mật khẩu
+                if (password.length < 8) {
+                    alert('Mật khẩu phải có ít nhất 8 ký tự!');
+                    return;
+                }
+                
+                // Disable button khi đang xử lý
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Đang đăng ký...';
+                
+                try {
+                    const response = await fetch('http://localhost:3000/api/auth/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            HoTen: fullname,
+                            Email: email,
+                            SDT: phone,
+                            DiaChi: address,
+                            NgaySinh: birthdate,
+                            TenTaiKhoan: username,
+                            MatKhau: password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Lưu token và thông tin user vào localStorage
+                        localStorage.setItem('token', data.data.token);
+                        localStorage.setItem('user', JSON.stringify(data.data.user));
+                        
+                        alert('Đăng ký thành công! Chào mừng bạn đến với SONA!');
+                        
+                        // Chuyển hướng về trang chủ
+                        window.location.href = 'index.html';
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Đăng ký tài khoản';
+                    }
+                } catch (error) {
+                    console.error('Lỗi:', error);
+                    alert('Không thể kết nối đến server. Vui lòng kiểm tra lại.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Đăng ký tài khoản';
+                }
+            });
+        }
+    </script>
 </body>
 </html>

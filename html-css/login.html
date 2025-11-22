@@ -249,5 +249,77 @@
             </div>
         </div>
     </div>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (menuToggle && sidebar) {
+            menuToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!menuToggle.contains(e.target) && !sidebar.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        }
+
+        // Xử lý đăng nhập
+        const loginForm = document.querySelector('.login-form');
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                const submitBtn = loginForm.querySelector('button[type="submit"]');
+                
+                // Disable button khi đang xử lý
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Đang đăng nhập...';
+                
+                try {
+                    const response = await fetch('http://localhost:3000/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Lưu token và thông tin user vào localStorage
+                        localStorage.setItem('token', data.data.token);
+                        localStorage.setItem('user', JSON.stringify(data.data.user));
+                        
+                        alert('Đăng nhập thành công! Chào mừng ' + data.data.user.hoTen);
+                        
+                        // Chuyển hướng về trang chủ hoặc trang account
+                        if (data.data.user.vaiTro === 'admin') {
+                            window.location.href = 'account.html'; // Trang admin
+                        } else {
+                            window.location.href = 'index.html'; // Trang chủ
+                        }
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Đăng nhập';
+                    }
+                } catch (error) {
+                    console.error('Lỗi:', error);
+                    alert('Không thể kết nối đến server. Vui lòng kiểm tra lại.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Đăng nhập';
+                }
+            });
+        }
+    </script>
 </body>
 </html>

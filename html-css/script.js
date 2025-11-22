@@ -1,3 +1,63 @@
+// Check login status and update UI
+function checkLoginStatus() {
+    const token = localStorage.getItem('token');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userIcon = document.getElementById('userIcon');
+    const userDropdown = document.getElementById('userDropdown');
+    const userName = document.getElementById('userName');
+    
+    if (token && user.id) {
+        // User is logged in - show dropdown functionality
+        
+        // Display user name
+        if (userName && user.hoTen) {
+            userName.textContent = user.hoTen;
+            userName.style.display = 'inline';
+        }
+        
+        if (userIcon) {
+            userIcon.href = '#';
+            userIcon.addEventListener('click', function(e) {
+                e.preventDefault();
+                userDropdown.classList.toggle('show');
+            });
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (userDropdown && !e.target.closest('.user-menu-wrapper')) {
+                userDropdown.classList.remove('show');
+            }
+        });
+        
+        // Handle logout
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                alert('Đăng xuất thành công!');
+                window.location.reload();
+            });
+        }
+    } else {
+        // User is not logged in - hide dropdown and user name
+        if (userDropdown) {
+            userDropdown.style.display = 'none';
+        }
+        if (userName) {
+            userName.style.display = 'none';
+        }
+        if (userIcon) {
+            userIcon.href = 'login.html';
+        }
+    }
+}
+
+// Run on page load
+checkLoginStatus();
+
 // Countdown timer for Flash Sale
 function updateCountdown() {
     const now = new Date();

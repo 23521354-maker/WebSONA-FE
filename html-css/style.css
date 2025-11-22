@@ -191,10 +191,134 @@ body {
 .header-icons i {
     cursor: pointer;
     transition: transform 0.3s;
+    color: #fff;
 }
 
 .header-icons i:hover {
     transform: scale(1.1);
+    color: #fff;
+}
+
+.header-icons a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.header-icons a:visited {
+    color: #fff;
+}
+
+.header-icons a:hover {
+    color: #fff;
+}
+
+.header-icons a i {
+    color: #fff;
+}
+
+/* User Menu Dropdown */
+.user-menu-wrapper {
+    position: relative;
+}
+
+.user-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-name {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    min-width: 200px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.user-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-dropdown::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #fff;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    color: #000 !important;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-size: 15px;
+}
+
+.dropdown-item:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.dropdown-item:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.dropdown-item:hover {
+    background: #f5f5f5;
+    color: #000 !important;
+}
+
+.dropdown-item:visited {
+    color: #000 !important;
+}
+
+.dropdown-item:active {
+    color: #000 !important;
+}
+
+.dropdown-item i {
+    font-size: 16px;
+    width: 20px;
+    color: #000 !important;
+}
+
+.dropdown-item:hover i {
+    color: #000 !important;
+}
+
+.dropdown-item:visited i {
+    color: #000 !important;
+}
+
+.dropdown-item:active i {
+    color: #000 !important;
 }
 
 .cart-icon {
