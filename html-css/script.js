@@ -2,7 +2,7 @@
 function checkLoginStatus() {
     const token = localStorage.getItem('token');
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const userIcon = document.getElementById('userIcon');
+    const userButton = document.getElementById('userIcon');
     const userDropdown = document.getElementById('userDropdown');
     const userName = document.getElementById('userName');
     
@@ -15,9 +15,8 @@ function checkLoginStatus() {
             userName.style.display = 'inline';
         }
         
-        if (userIcon) {
-            userIcon.href = '#';
-            userIcon.addEventListener('click', function(e) {
+        if (userButton) {
+            userButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 userDropdown.classList.toggle('show');
             });
@@ -42,15 +41,17 @@ function checkLoginStatus() {
             });
         }
     } else {
-        // User is not logged in - hide dropdown and user name
+        // User is not logged in - hide dropdown and user name, redirect to login
         if (userDropdown) {
             userDropdown.style.display = 'none';
         }
         if (userName) {
             userName.style.display = 'none';
         }
-        if (userIcon) {
-            userIcon.href = 'login.html';
+        if (userButton) {
+            userButton.addEventListener('click', function() {
+                window.location.href = 'login.html';
+            });
         }
     }
 }

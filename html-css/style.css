@@ -221,10 +221,27 @@ body {
     position: relative;
 }
 
-.user-link {
+.user-button {
     display: flex;
     align-items: center;
     gap: 8px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.user-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.user-button i {
+    font-size: 20px;
+    color: #fff;
 }
 
 .user-name {
@@ -347,13 +364,15 @@ body {
     margin-bottom: 30px;
     position: relative;
     overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: top;
 }
 
 .hero-banner.shrink {
     max-height: 0;
     opacity: 0;
     margin-bottom: 0;
+    transform: scaleY(0);
 }
 
 .banner-slider {
