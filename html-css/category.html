@@ -48,12 +48,25 @@
                     </div>
                 </div>
                 <div class="header-icons">
-                    <i class="fas fa-search"></i>
+                    <i class="fas fa-search" id="searchIcon"></i>
                     <a href="cart.html" class="cart-icon">
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count">0</span>
                     </a>
-                    <a href="login.html"><i class="fas fa-user"></i></a>
+                    <div class="user-menu-wrapper">
+                        <button id="userIcon" class="user-button">
+                            <i class="fas fa-user"></i>
+                            <span id="userName" class="user-name"></span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="account.html" class="dropdown-item">
+                                <i class="fas fa-user-circle"></i> Tài khoản
+                            </a>
+                            <a href="#" class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -167,6 +180,16 @@
         </div>
     </main>
 
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-close" id="searchClose">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="search-box">
+            <input type="text" placeholder="Tìm kiếm sản phẩm..." id="searchInput">
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -178,5 +201,87 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // Search overlay functionality
+        const searchIcon = document.getElementById('searchIcon');
+        const searchOverlay = document.getElementById('searchOverlay');
+        const searchClose = document.getElementById('searchClose');
+        const searchInput = document.getElementById('searchInput');
+
+        if (searchIcon) {
+            searchIcon.addEventListener('click', () => {
+                searchOverlay.classList.add('active');
+                setTimeout(() => searchInput.focus(), 300);
+            });
+        }
+
+        if (searchClose) {
+            searchClose.addEventListener('click', () => {
+                searchOverlay.classList.remove('active');
+            });
+        }
+
+        if (searchOverlay) {
+            searchOverlay.addEventListener('click', (e) => {
+                if (e.target === searchOverlay) {
+                    searchOverlay.classList.remove('active');
+                }
+            });
+        }
+
+        // User authentication UI
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const userIcon = document.getElementById('userIcon');
+            const userName = document.getElementById('userName');
+            const userDropdown = document.getElementById('userDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (token && user.hoTen) {
+                // User is logged in
+                userName.textContent = user.hoTen;
+                userName.style.display = 'inline';
+            } else {
+                // User is not logged in
+                userName.style.display = 'none';
+                // Redirect to login when clicking user icon
+                if (userIcon) {
+                    userIcon.addEventListener('click', (e) => {
+                        if (!token) {
+                            e.stopPropagation();
+                            window.location.href = 'login.html';
+                        }
+                    });
+                }
+            }
+
+            // Toggle dropdown
+            if (userIcon && token) {
+                userIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (userDropdown && !userIcon.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                }
+            });
+
+            // Logout functionality
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    alert('Đã đăng xuất thành công!');
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+    </script>
 </body>
 </html>

@@ -48,7 +48,7 @@
                     </div>
                 </div>
                 <div class="header-icons">
-                    <i class="fas fa-search"></i>
+                    <i class="fas fa-search" id="searchIcon"></i>
                     <a href="cart.html" class="cart-icon">
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count">0</span>
@@ -249,6 +249,16 @@
         </div>
     </section>
 
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-close" id="searchClose">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="search-box">
+            <input type="text" placeholder="Tìm kiếm sản phẩm..." id="searchInput">
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -260,5 +270,27 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // Search overlay functionality
+        const searchIcon = document.getElementById('searchIcon');
+        const searchOverlay = document.getElementById('searchOverlay');
+        const searchClose = document.getElementById('searchClose');
+        const searchInput = document.getElementById('searchInput');
+
+        searchIcon.addEventListener('click', () => {
+            searchOverlay.classList.add('active');
+            setTimeout(() => searchInput.focus(), 300);
+        });
+
+        searchClose.addEventListener('click', () => {
+            searchOverlay.classList.remove('active');
+        });
+
+        searchOverlay.addEventListener('click', (e) => {
+            if (e.target === searchOverlay) {
+                searchOverlay.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
