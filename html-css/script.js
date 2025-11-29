@@ -56,8 +56,71 @@ function checkLoginStatus() {
     }
 }
 
+// Cart utilities
+function getCart() {
+    try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; }
+}
+function saveCart(cart) {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+function getCartCount() {
+    const cart = getCart();
+    return cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+}
+function updateCartBadge() {
+    const cartCountEl = document.querySelector('.cart-count');
+    if (cartCountEl) cartCountEl.textContent = String(getCartCount());
+}
+async function addToCartItemById(productId) {
+    // Try to fetch full product details for richer cart item
+    let item = { id: productId, qty: 1 };
+    try {
+        // First, try by ID
+        let p = null;
+        const idRes = await fetch('http://localhost:3000/api/products/' + encodeURIComponent(productId));
+        if (idRes.ok) {
+            p = await idRes.json();
+        } else {
+            // Fallback: search by code/name if productId is not numeric
+            const searchRes = await fetch('http://localhost:3000/api/products/search?q=' + encodeURIComponent(productId));
+            if (searchRes.ok) {
+                const list = await searchRes.json();
+                if (Array.isArray(list) && list.length) {
+                    p = list[0];
+                }
+            }
+        }
+        if (p) {
+            let imgPath = p.HinhAnhChinh || '';
+            if (imgPath.startsWith('../')) imgPath = imgPath.substring(3);
+            if (imgPath && !imgPath.startsWith('/')) imgPath = '/' + imgPath;
+            item = {
+                id: p.ID_SP || productId,
+                qty: 1,
+                name: p.TenSP || ('Sản phẩm #' + productId),
+                price: Number(p.GiaBan || 0),
+                image: imgPath,
+                cpu: p.CPU || p.TenCPU || '',
+                brand: p.TenHang || '',
+                categoryId: p.ID_DM || null
+            };
+        }
+    } catch {}
+
+    const cart = getCart();
+    const existing = cart.find(x => String(x.id) === String(productId));
+    if (existing) {
+        existing.qty = (existing.qty || 1) + 1;
+    } else {
+        cart.push(item);
+    }
+    saveCart(cart);
+    updateCartBadge();
+}
+
 // Run on page load
 checkLoginStatus();
+updateCartBadge();
 
 // Countdown timer for Flash Sale
 function updateCountdown() {
@@ -91,19 +154,13 @@ if (document.getElementById('days')) {
 
 
 // Add to cart functionality
+// Optional: demo add to cart when clicking product cards (keep badge animation)
 document.querySelectorAll('.product-card').forEach(card => {
     card.addEventListener('click', function() {
         const cartCount = document.querySelector('.cart-count');
         if (cartCount) {
-            let count = parseInt(cartCount.textContent);
-            count++;
-            cartCount.textContent = count;
-            
-            // Add animation
             cartCount.style.transform = 'scale(1.3)';
-            setTimeout(() => {
-                cartCount.style.transform = 'scale(1)';
-            }, 300);
+            setTimeout(() => { cartCount.style.transform = 'scale(1)'; }, 300);
         }
     });
 });

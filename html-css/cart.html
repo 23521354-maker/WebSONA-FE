@@ -83,41 +83,48 @@
             font-size: 1.05rem;
         }
         .cart-quantity {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
             overflow: hidden;
+            height: 40px;
+            background: #fafafa;
         }
         .cart-quantity button {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border: none;
             background: #fff;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 18px;
+            line-height: 1;
             color: #333;
-            transition: all 0.2s;
-            border-right: 1px solid #ddd;
-        }
-        .cart-quantity button:last-child {
-            border-right: none;
-            border-left: 1px solid #ddd;
+            transition: background 0.15s, color 0.15s;
         }
         .cart-quantity button:hover {
-            background: #f0f0f0;
+            background: #f3f3f3;
+            color: #111;
         }
-        .cart-quantity input {
-            width: 50px;
-            height: 36px;
+        .cart-quantity .qty-input {
+            width: 56px;
+            height: 40px;
             text-align: center;
-            border: none;
-            font-size: 1rem;
+            border-left: 1px solid #e0e0e0;
+            border-right: 1px solid #e0e0e0;
+            border-top: none;
+            border-bottom: none;
+            font-size: 15px;
             outline: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #fff;
+            -moz-appearance: textfield;
+        }
+        /* Hide default number steppers */
+        .cart-quantity .qty-input::-webkit-outer-spin-button,
+        .cart-quantity .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
         .cart-delete {
             color: #999;
@@ -254,7 +261,7 @@
                     </div>
                     <div class="logo">
                         <a href="index.html">
-                            <img src="../img/hình SONA.png" alt="Sona Logo">
+                            <img src="../img/sona-logo.png" alt="Sona Logo">
                         </a>
                     </div>
                 </div>
@@ -284,31 +291,8 @@
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <img src="../img/thinkbook14.png" alt="ThinkPad" class="cart-item-image">
-                        </td>
-                        <td>
-                            <div class="cart-item-info">
-                                <div class="cart-item-name">ThinkPad P16s 2025 (Ultra 7-265H vPro| 32GB RAM| 1TB SSD| RTX Pro 1000)</div>
-                                <div class="cart-item-specs">(CPU: Ultra 7-265H vPro, RAM: 32GB, SSD: 1TB, Card Đồ Họa: RTX Pro 1000)</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="cart-item-price">58,800,000₫</div>
-                        </td>
-                        <td>
-                            <div class="cart-quantity">
-                                <button onclick="decreaseQuantity()">-</button>
-                                <input type="number" value="1" min="1" id="quantity">
-                                <button onclick="increaseQuantity()">+</button>
-                            </div>
-                        </td>
-                        <td>
-                            <i class="fas fa-trash cart-delete" onclick="removeItem()"></i>
-                        </td>
-                    </tr>
+                <tbody id="cartTbody">
+                    <!-- Items will be rendered here -->
                 </tbody>
             </table>
             <div class="cart-actions">
@@ -320,11 +304,11 @@
         <div class="cart-summary">
             <div class="cart-summary-row">
                 <span>Tổng phụ:</span>
-                <span class="price">58,800,000₫</span>
+                <span class="price" id="subtotalPrice">0₫</span>
             </div>
             <div class="cart-summary-row total">
                 <span>Tổng cộng:</span>
-                <span class="price">58,800,000₫</span>
+                <span class="price" id="totalPrice">0₫</span>
             </div>
             <div class="cart-agreement">
                 <input type="checkbox" id="agreement" checked>
@@ -346,22 +330,121 @@
 
     <script src="script.js"></script>
     <script>
-        function increaseQuantity() {
-            const input = document.getElementById('quantity');
-            input.value = parseInt(input.value) + 1;
+        // Helpers mirrored from script.js but kept local if needed
+        function getCart() {
+            try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; }
         }
+        function saveCart(cart) { localStorage.setItem('cart', JSON.stringify(cart)); }
+        function formatVND(n) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(n||0)); }
 
-        function decreaseQuantity() {
-            const input = document.getElementById('quantity');
-            if (parseInt(input.value) > 1) {
-                input.value = parseInt(input.value) - 1;
-            }
-        }
+        async function renderCart() {
+            const tbody = document.getElementById('cartTbody');
+            const subtotalEl = document.getElementById('subtotalPrice');
+            const totalEl = document.getElementById('totalPrice');
+            let cart = getCart();
 
-        function removeItem() {
-            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-                alert('Sản phẩm đã được xóa khỏi giỏ hàng');
+            // Empty state
+            if (!cart.length) {
+                tbody.innerHTML = `<tr><td colspan="5" style="padding:24px; text-align:center; color:#666;">Giỏ hàng trống. Hãy thêm sản phẩm từ trang chi tiết.</td></tr>`;
+                subtotalEl.textContent = formatVND(0);
+                totalEl.textContent = formatVND(0);
+                return;
             }
+
+            // Hydrate items missing name/image/price from backend
+            async function hydrateItem(item) {
+                if (item && item.name && item.image && item.price) return item;
+                try {
+                    let p = null;
+                    // Try fetch by ID
+                    const idRes = await fetch('http://localhost:3000/api/products/' + encodeURIComponent(item.id));
+                    if (idRes.ok) {
+                        p = await idRes.json();
+                    } else {
+                        // Fallback search
+                        const searchRes = await fetch('http://localhost:3000/api/products/search?q=' + encodeURIComponent(item.id));
+                        if (searchRes.ok) {
+                            const list = await searchRes.json();
+                            if (Array.isArray(list) && list.length) p = list[0];
+                        }
+                    }
+                    if (p) {
+                        let imgPath = p.HinhAnhChinh || '';
+                        if (imgPath.startsWith('../')) imgPath = imgPath.substring(3);
+                        if (imgPath && !imgPath.startsWith('/')) imgPath = '/' + imgPath;
+                        item.name = p.TenSP || item.name;
+                        item.price = Number(p.GiaBan || item.price || 0);
+                        item.image = imgPath || item.image;
+                        item.cpu = item.cpu || p.CPU || p.TenCPU || '';
+                    }
+                } catch {}
+                return item;
+            }
+
+            // Hydrate all and persist
+            const hydrated = await Promise.all(cart.map(hydrateItem));
+            cart = hydrated;
+            saveCart(cart);
+
+            let subtotal = 0;
+            tbody.innerHTML = cart.map((item, idx) => {
+                const lineTotal = Number(item.price || 0) * Number(item.qty || 1);
+                subtotal += lineTotal;
+                const img = item.image || '/img/legion.png'; // Use URL as-is
+                const name = item.name || ('Sản phẩm #' + item.id); // Show TenSP
+                const specs = item.cpu ? `(CPU: ${item.cpu})` : '';
+                return `
+                <tr data-index="${idx}">
+                    <td><img src="${img}" alt="${name}" class="cart-item-image"></td>
+                    <td>
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${name}</div>
+                            <div class="cart-item-specs">${specs}</div>
+                        </div>
+                    </td>
+                    <td><div class="cart-item-price">${formatVND(item.price || 0)}</div></td>
+                    <td>
+                        <div class="cart-quantity">
+                            <button class="qty-dec">-</button>
+                            <input type="number" value="${item.qty || 1}" min="1" class="qty-input">
+                            <button class="qty-inc">+</button>
+                        </div>
+                    </td>
+                    <td><i class="fas fa-trash cart-delete"></i></td>
+                </tr>`;
+            }).join('');
+
+            subtotalEl.textContent = formatVND(subtotal);
+            totalEl.textContent = formatVND(subtotal);
+
+            // Wire quantity and delete actions
+            tbody.querySelectorAll('tr').forEach(row => {
+                const idx = Number(row.getAttribute('data-index'));
+                const dec = row.querySelector('.qty-dec');
+                const inc = row.querySelector('.qty-inc');
+                const input = row.querySelector('.qty-input');
+                const del = row.querySelector('.cart-delete');
+                function updateQty(newQty) {
+                    const cart = getCart();
+                    cart[idx].qty = Math.max(1, Number(newQty)||1);
+                    saveCart(cart);
+                    renderCart();
+                    // Update header badge if available
+                    if (typeof updateCartBadge === 'function') updateCartBadge();
+                }
+                dec.addEventListener('click', () => updateQty(Number(input.value) - 1));
+                inc.addEventListener('click', () => updateQty(Number(input.value) + 1));
+                input.addEventListener('change', () => updateQty(Number(input.value)));
+                del.addEventListener('click', () => {
+                    if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                        const cart = getCart();
+                        cart.splice(idx, 1);
+                        saveCart(cart);
+                        renderCart();
+                        if (typeof updateCartBadge === 'function') updateCartBadge();
+                    }
+                });
+            });
         }
 
         function checkout() {
@@ -372,6 +455,8 @@
             }
             window.location.href = 'checkout.html';
         }
+
+        document.addEventListener('DOMContentLoaded', renderCart);
     </script>
 </body>
 </html>

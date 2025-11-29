@@ -271,8 +271,8 @@
                         </div>
                     </div>
                     <div class="logo">
-                        <a href="index.html">
-                            <img src="../img/hình SONA.png" alt="Sona Logo">
+                        <a href="/">
+                            <img src="/img/sona-logo.png" alt="Sona Logo">
                         </a>
                     </div>
                 </div>
@@ -303,11 +303,10 @@
 
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-        <div class="container">
-            <a href="index.html">Trang chủ</a> ›
-            <a href="category.html">Lenovo</a> ›
-            <a href="category.html">Legion</a> ›
-            <span>Legion Pro 5 2025 R9000P</span>
+        <div class="container" id="breadcrumbContainer">
+            <!-- Dynamic breadcrumb will be injected here -->
+            <a href="/">Trang chủ</a>
+            › <span>Đang tải...</span>
         </div>
     </div>
 
@@ -318,18 +317,7 @@
                 <!-- Product Images -->
                 <div class="product-images">
                     <div class="main-image">
-                        <img src="../img/ảnh legion.png" alt="Legion Pro 5" id="mainImage">
-                    </div>
-                    <div class="thumbnail-list">
-                        <div class="thumbnail active">
-                            <img src="../img/ảnh legion.png" alt="Thumbnail 1">
-                        </div>
-                        <div class="thumbnail">
-                            <img src="../img/thinkbookx.png" alt="Thumbnail 2">
-                        </div>
-                        <div class="thumbnail">
-                            <img src="../img/thinkbook14.png" alt="Thumbnail 3">
-                        </div>
+                        <img src="/img/legion.png" alt="Ảnh sản phẩm" id="mainImage">
                     </div>
                 </div>
 
@@ -343,31 +331,10 @@
                     </div>
 
                     <!-- Specifications Options -->
-                    <div class="spec-options">
+                    <div class="spec-options" id="cpuSpec">
                         <div class="spec-label">CPU</div>
                         <div class="spec-buttons">
-                            <button class="spec-btn active">R9-9955HX</button>
-                        </div>
-                    </div>
-
-                    <div class="spec-options">
-                        <div class="spec-label">RAM</div>
-                        <div class="spec-buttons">
-                            <button class="spec-btn active">32GB</button>
-                        </div>
-                    </div>
-
-                    <div class="spec-options">
-                        <div class="spec-label">SSD</div>
-                        <div class="spec-buttons">
-                            <button class="spec-btn active">1TB</button>
-                        </div>
-                    </div>
-
-                    <div class="spec-options">
-                        <div class="spec-label">Card Đồ Họa</div>
-                        <div class="spec-buttons">
-                            <button class="spec-btn active">RTX 5060</button>
+                            <button class="spec-btn active" id="cpuNameBtn">Đang tải...</button>
                         </div>
                     </div>
 
@@ -398,7 +365,8 @@
 
                     <!-- Buy Section -->
                     <div class="buy-section">
-                        <button class="buy-now-btn">MUA NGAY</button>
+                        <button class="buy-now-btn" id="addToCartBtn" style="flex: 0 0 auto; background:#fff; color:#ff0000; border:2px solid #ff0000;">THÊM VÀO GIỎ</button>
+                        <button class="buy-now-btn" id="buyNowBtn" style="flex: 1 1 auto;">MUA NGAY</button>
                     </div>
 
                     <!-- Contact Info -->
@@ -523,7 +491,7 @@
                         </div>
                     </div>
                     <div class="product-card">
-                        <img src="../img/ảnh legion.png" alt="Legion Pro 5">
+                        <img src="../img/legion.png" alt="Legion Pro 5">
                         <h3>Legion Pro 5 2025 R9000P (White)(R9-9955HX| 32GB...</h3>
                         <div class="price">
                             <span class="current-price">45,300,000₫</span>
@@ -555,8 +523,82 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="/html-css/script.js"></script>
     <script>
+        // Load product details to build dynamic breadcrumb
+        (function() {
+            const API_URL = 'http://localhost:3000/api';
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+            const bc = document.getElementById('breadcrumbContainer');
+            const priceEl = document.querySelector('.current-price');
+            const oldPriceEl = document.querySelector('.old-price');
+            const nameEl = document.querySelector('.product-info h1');
+
+            async function loadProduct() {
+                if (!productId) {
+                    bc.innerHTML = '<a href="/">Trang chủ</a> › <span>Chi tiết sản phẩm</span>';
+                    return;
+                }
+                try {
+                    const res = await fetch(`${API_URL}/products/${productId}`);
+                    if (!res.ok) throw new Error('Không lấy được sản phẩm');
+                    const p = await res.json();
+
+                    // Ensure fields exist: TenDM (category), TenHang (brand), TenSP (name)
+                    const catName = p.TenDM || 'Danh mục';
+                    const brandName = p.TenHang || 'Hãng';
+                    const name = p.TenSP || 'Sản phẩm';
+
+                    // Build links: Trang chủ > {DM} > {Hãng} > {Tên}
+                    // Link to category page by ID_DM if available, else by cat name
+                    const catLink = p.ID_DM ? `/html-css/category.html?cat=${encodeURIComponent(p.ID_DM)}`
+                                             : `/html-css/category.html?cat=${encodeURIComponent(catName)}`;
+                    // Link to brand filter (optional): use query param brand
+                    const brandLink = `/html-css/category.html?cat=${encodeURIComponent(p.ID_DM || catName)}&brand=${encodeURIComponent(brandName)}`;
+
+                    bc.innerHTML = `
+                        <a href="/">Trang chủ</a> ›
+                        <a href="${catLink}">${catName}</a> ›
+                        <a href="${brandLink}">${brandName}</a> ›
+                        <span>${name}</span>
+                    `;
+
+                    // Update image from database HinhAnhChinh
+                    if (p.HinhAnhChinh) {
+                        let imgPath = p.HinhAnhChinh;
+                        if (imgPath.startsWith('../')) imgPath = imgPath.substring(3);
+                        if (!imgPath.startsWith('/')) imgPath = '/' + imgPath;
+                        const mainImg = document.getElementById('mainImage');
+                        if (mainImg) mainImg.src = imgPath;
+                    }
+
+                    // Update product name and price
+                    if (nameEl && p.TenSP) nameEl.textContent = p.TenSP;
+                    if (priceEl && typeof p.GiaBan !== 'undefined') {
+                        const formatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
+                        priceEl.textContent = formatter.format(Number(p.GiaBan));
+                        // Compute old price +10% for display if not provided
+                        const old = Number(p.GiaBan) * 1.1;
+                        if (oldPriceEl) oldPriceEl.textContent = formatter.format(Math.round(old));
+                    }
+
+                    // Update CPU spec from database if available
+                    const cpuBtn = document.getElementById('cpuNameBtn');
+                    if (cpuBtn) {
+                        // Prefer explicit CPU field; fallback to product name
+                        const cpuName = p.CPU || p.CPUModel || p.TenCPU || p.SpecCPU || p.TenSP;
+                        cpuBtn.textContent = cpuName;
+                    }
+                } catch (err) {
+                    bc.innerHTML = '<a href="/">Trang chủ</a> › <span>Chi tiết sản phẩm</span>';
+                    console.error('Breadcrumb load error:', err);
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', loadProduct);
+        })();
+
         // Thumbnail click handler
         document.querySelectorAll('.thumbnail').forEach(thumb => {
             thumb.addEventListener('click', function() {
@@ -591,6 +633,39 @@
                 if (e.target === searchOverlay) {
                     searchOverlay.classList.remove('active');
                 }
+            });
+        }
+
+        // Simple handlers for add to cart / buy now
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        const buyNowBtn = document.getElementById('buyNowBtn');
+        const params2 = new URLSearchParams(window.location.search);
+        const productId2 = params2.get('id');
+
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', async () => {
+                if (!productId2) return alert('Thiếu mã sản phẩm');
+                try {
+                    if (window.addToCartItemById) {
+                        await window.addToCartItemById(productId2);
+                    }
+                    // Badge animation feedback
+                    const cartCountEl = document.querySelector('.cart-count');
+                    if (cartCountEl) {
+                        cartCountEl.style.transform = 'scale(1.3)';
+                        setTimeout(() => { cartCountEl.style.transform = 'scale(1)'; }, 250);
+                    }
+                    alert('Đã thêm vào giỏ hàng');
+                } catch (e) {
+                    alert('Không thêm được vào giỏ');
+                }
+            });
+        }
+
+        if (buyNowBtn) {
+            buyNowBtn.addEventListener('click', () => {
+                // Redirect to checkout or cart page as desired
+                window.location.href = '/html-css/cart.html';
             });
         }
     </script>

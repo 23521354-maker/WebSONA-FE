@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sona - Máy tính - Phụ kiện công nghệ</title>
-    <link rel="icon" type="image/png" href="../img/LEGO web.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="/img/LEGO web.png">
+    <link rel="stylesheet" href="/html-css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -42,8 +42,8 @@
                         </div>
                     </div>
                     <div class="logo">
-                        <a href="index.html">
-                            <img src="../img/hình SONA.png" alt="Sona Logo">
+                        <a href="/">
+                            <img src="/img/sona-logo.png" alt="Sona Logo">
                         </a>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
     <section class="hero-banner">
         <div class="banner-slider">
             <div class="banner-slide active">
-                <img src="../img/ảnh 2.png" alt="Banner 1">
+                <img src="/img/banner-1.png" alt="Banner 1">
             </div>
         </div>
     </section>
@@ -89,7 +89,7 @@
             </div>
             <div class="product-grid">
                 <div class="product-card">
-                    <img src="../img/ảnh legion.png" alt="CPU intel">
+                    <img src="../img/legion.png" alt="CPU intel">
                     <h3>CPU intel i5 14600kf (R9-8940HX| 16GB...</h3>
                     <div class="price">
                         <span class="current-price">5,890,000₫</span>
@@ -269,8 +269,110 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="/html-css/script.js"></script>
     <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        // Format giá tiền
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN', { 
+                style: 'currency', 
+                currency: 'VND' 
+            }).format(price);
+        }
+
+        // Tính phần trăm giảm giá (giả định giảm 5-20% ngẫu nhiên cho demo)
+        function calculateDiscount(price) {
+            const discount = Math.floor(Math.random() * 16) + 5; // 5-20%
+            const oldPrice = price / (1 - discount / 100);
+            return {
+                oldPrice: Math.round(oldPrice),
+                discount: discount
+            };
+        }
+
+        // Render product card
+        function renderProductCard(product) {
+            const { oldPrice, discount } = calculateDiscount(product.GiaBan);
+            // Fix image path: ensure it starts with /
+            let imagePath = product.HinhAnhChinh;
+            if (imagePath.startsWith('../')) {
+                imagePath = imagePath.substring(3);
+            }
+            if (!imagePath.startsWith('/')) {
+                imagePath = '/' + imagePath;
+            }
+            return `
+                <div class="product-card">
+                    <a href="/product.html?id=${product.ID_SP}">
+                        <img src="${imagePath}" alt="${product.TenSP}" onerror="this.src='https://via.placeholder.com/250x200/ddd/999?text=No+Image'">
+                        <h3>${product.TenSP}</h3>
+                        <div class="price">
+                            <span class="current-price">${formatPrice(product.GiaBan)}</span>
+                            <span class="old-price">${formatPrice(oldPrice)}</span>
+                            <span class="discount">-${discount}%</span>
+                        </div>
+                    </a>
+                </div>
+            `;
+        }
+
+        // Load Flashsale products
+        async function loadFlashsale() {
+            try {
+                const response = await fetch(`${API_URL}/products/flashsale`);
+                const products = await response.json();
+                const container = document.querySelector('.flashsale .product-grid');
+                if (products.length > 0) {
+                    container.innerHTML = products.map(renderProductCard).join('');
+                }
+            } catch (error) {
+                console.error('Error loading flashsale:', error);
+            }
+        }
+
+        // Load Best Sellers
+        async function loadBestSellers() {
+            try {
+                const response = await fetch(`${API_URL}/products/bestsellers`);
+                const products = await response.json();
+                const container = document.querySelector('.best-sellers .product-grid');
+                if (products.length > 0) {
+                    container.innerHTML = products.map(renderProductCard).join('');
+                }
+            } catch (error) {
+                console.error('Error loading best sellers:', error);
+            }
+        }
+
+        // Load Accessories
+        async function loadAccessories() {
+            try {
+                const response = await fetch(`${API_URL}/products/accessories`);
+                const products = await response.json();
+                const container = document.querySelector('.accessories .product-grid');
+                if (products.length > 0) {
+                    container.innerHTML = products.map(renderProductCard).join('');
+                } else {
+                    // Nếu chưa có phụ kiện, hiển thị sản phẩm thường
+                    const response2 = await fetch(`${API_URL}/products?limit=4`);
+                    const allProducts = await response2.json();
+                    if (allProducts.length > 0) {
+                        container.innerHTML = allProducts.slice(0, 4).map(renderProductCard).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading accessories:', error);
+            }
+        }
+
+        // Load all data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFlashsale();
+            loadBestSellers();
+            loadAccessories();
+        });
+
         // Search overlay functionality
         const searchIcon = document.getElementById('searchIcon');
         const searchOverlay = document.getElementById('searchOverlay');
@@ -289,6 +391,16 @@
         searchOverlay.addEventListener('click', (e) => {
             if (e.target === searchOverlay) {
                 searchOverlay.classList.remove('active');
+            }
+        });
+
+        // Search functionality
+        searchInput.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                const query = searchInput.value.trim();
+                if (query) {
+                    window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+                }
             }
         });
     </script>
