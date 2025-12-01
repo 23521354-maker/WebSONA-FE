@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - Sona</title>
+    <link rel="icon" type="image/png" href="/img/LEGO web.png">
+    <link rel="stylesheet" href="/html-css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .docs-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .docs-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 40px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+        .docs-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        .docs-header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 24px;
+        }
+        .base-url {
+            background: rgba(255,255,255,0.2);
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            display: inline-block;
+        }
+        .endpoint-section {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .endpoint-section h2 {
+            color: #2d3748;
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid #667eea;
+        }
+        .endpoint {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s;
+        }
+        .endpoint:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+        .method-url {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .method {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .method.get {
+            background: #48bb78;
+            color: white;
+        }
+        .method.post {
+            background: #4299e1;
+            color: white;
+        }
+        .method.put {
+            background: #ed8936;
+            color: white;
+        }
+        .method.delete {
+            background: #f56565;
+            color: white;
+        }
+        .url-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: #2d3748;
+            flex: 1;
+            min-width: 200px;
+        }
+        .endpoint-desc {
+            color: #4a5568;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        .params, .response {
+            margin-top: 16px;
+        }
+        .params h4, .response h4 {
+            color: #2d3748;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .param-list {
+            background: white;
+            border-radius: 6px;
+            padding: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        .param-item {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .param-item:last-child {
+            border-bottom: none;
+        }
+        .param-name {
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+            font-weight: 600;
+            min-width: 120px;
+        }
+        .param-desc {
+            color: #4a5568;
+            flex: 1;
+        }
+        .response-example {
+            background: #1a202c;
+            color: #68d391;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+        .try-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 12px;
+        }
+        .try-button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        .nav-links {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 24px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="logo">
+                        <a href="index.html">
+                            <img src="../img/sona-logo.png" alt="Sona Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="header-icons">
+                    <a href="index.html" style="color: white; text-decoration: none; margin-right: 20px;">
+                        <i class="fas fa-home"></i> Trang chủ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="docs-container">
+        <div class="docs-header">
+            <h1><i class="fas fa-book"></i> API Documentation</h1>
+            <p>Tài liệu API cho hệ thống quản lý sản phẩm Sona</p>
+            <div class="base-url">
+                <strong>Base URL:</strong> http://localhost:3000/api
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="#products">Products</a>
+            <a href="#auth">Authentication</a>
+            <a href="#orders">Orders</a>
+        </div>
+
+        <!-- Products API -->
+        <div class="endpoint-section" id="products">
+            <h2><i class="fas fa-box"></i> Products API</h2>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method get">GET</span>
+                    <span class="url-path">/products</span>
+                </div>
+                <div class="endpoint-desc">
+                    Lấy danh sách tất cả sản phẩm
+                </div>
+                <div class="response">
+                    <h4>Response Example:</h4>
+                    <pre class="response-example">[
+  {
+    "ID_SP": 1,
+    "TenSP": "Intel core i5 14600KF",
+    "GiaBan": 5600000,
+    "HinhAnhChinh": "img/Sanpham/intel-core-i5-14600kf.webp",
+    "TenDM": "CPU",
+    "TenHang": "Intel"
+  }
+]</pre>
+                </div>
+                <button class="try-button" onclick="tryEndpoint('/products')">
+                    <i class="fas fa-play"></i> Thử ngay
+                </button>
+            </div>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method get">GET</span>
+                    <span class="url-path">/products/:id</span>
+                </div>
+                <div class="endpoint-desc">
+                    Lấy chi tiết một sản phẩm theo ID
+                </div>
+                <div class="params">
+                    <h4>Parameters:</h4>
+                    <div class="param-list">
+                        <div class="param-item">
+                            <span class="param-name">id</span>
+                            <span class="param-desc">ID của sản phẩm (path parameter)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="response">
+                    <h4>Response Example:</h4>
+                    <pre class="response-example">{
+  "ID_SP": 1,
+  "TenSP": "Intel core i5 14600KF",
+  "GiaBan": 5600000,
+  "HinhAnhChinh": "img/Sanpham/intel-core-i5-14600kf.webp",
+  "ID_DM": 1,
+  "TenDM": "CPU",
+  "TenHang": "Intel",
+  "CPU": "Intel Core i5-14600KF"
+}</pre>
+                </div>
+                <button class="try-button" onclick="tryEndpoint('/products/1')">
+                    <i class="fas fa-play"></i> Thử ngay
+                </button>
+            </div>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method get">GET</span>
+                    <span class="url-path">/products/flashsale</span>
+                </div>
+                <div class="endpoint-desc">
+                    Lấy danh sách sản phẩm Flash Sale
+                </div>
+                <button class="try-button" onclick="tryEndpoint('/products/flashsale')">
+                    <i class="fas fa-play"></i> Thử ngay
+                </button>
+            </div>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method get">GET</span>
+                    <span class="url-path">/products/bestsellers</span>
+                </div>
+                <div class="endpoint-desc">
+                    Lấy danh sách sản phẩm bán chạy nhất
+                </div>
+                <button class="try-button" onclick="tryEndpoint('/products/bestsellers')">
+                    <i class="fas fa-play"></i> Thử ngay
+                </button>
+            </div>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method get">GET</span>
+                    <span class="url-path">/products/accessories</span>
+                </div>
+                <div class="endpoint-desc">
+                    Lấy danh sách phụ kiện
+                </div>
+                <button class="try-button" onclick="tryEndpoint('/products/accessories')">
+                    <i class="fas fa-play"></i> Thử ngay
+                </button>
+            </div>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method get">GET</span>
+                    <span class="url-path">/products/search</span>
+                </div>
+                <div class="endpoint-desc">
+                    Tìm kiếm sản phẩm theo từ khóa
+                </div>
+                <div class="params">
+                    <h4>Query Parameters:</h4>
+                    <div class="param-list">
+                        <div class="param-item">
+                            <span class="param-name">q</span>
+                            <span class="param-desc">Từ khóa tìm kiếm</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="try-button" onclick="tryEndpoint('/products/search?q=intel')">
+                    <i class="fas fa-play"></i> Thử ngay
+                </button>
+            </div>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method get">GET</span>
+                    <span class="url-path">/products/category/:categoryId</span>
+                </div>
+                <div class="endpoint-desc">
+                    Lấy sản phẩm theo danh mục
+                </div>
+                <div class="params">
+                    <h4>Parameters:</h4>
+                    <div class="param-list">
+                        <div class="param-item">
+                            <span class="param-name">categoryId</span>
+                            <span class="param-desc">ID của danh mục</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="try-button" onclick="tryEndpoint('/products/category/1')">
+                    <i class="fas fa-play"></i> Thử ngay
+                </button>
+            </div>
+        </div>
+
+        <!-- Auth API -->
+        <div class="endpoint-section" id="auth">
+            <h2><i class="fas fa-lock"></i> Authentication API</h2>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method post">POST</span>
+                    <span class="url-path">/auth/register</span>
+                </div>
+                <div class="endpoint-desc">
+                    Đăng ký tài khoản mới
+                </div>
+                <div class="params">
+                    <h4>Request Body:</h4>
+                    <div class="param-list">
+                        <div class="param-item">
+                            <span class="param-name">hoTen</span>
+                            <span class="param-desc">Họ tên người dùng</span>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-name">email</span>
+                            <span class="param-desc">Email</span>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-name">matKhau</span>
+                            <span class="param-desc">Mật khẩu</span>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-name">soDienThoai</span>
+                            <span class="param-desc">Số điện thoại</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method post">POST</span>
+                    <span class="url-path">/auth/login</span>
+                </div>
+                <div class="endpoint-desc">
+                    Đăng nhập hệ thống
+                </div>
+                <div class="params">
+                    <h4>Request Body:</h4>
+                    <div class="param-list">
+                        <div class="param-item">
+                            <span class="param-name">email</span>
+                            <span class="param-desc">Email đăng nhập</span>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-name">matKhau</span>
+                            <span class="param-desc">Mật khẩu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders API -->
+        <div class="endpoint-section" id="orders">
+            <h2><i class="fas fa-shopping-cart"></i> Orders API</h2>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method post">POST</span>
+                    <span class="url-path">/orders</span>
+                </div>
+                <div class="endpoint-desc">
+                    Tạo đơn hàng mới
+                </div>
+                <div class="params">
+                    <h4>Request Body:</h4>
+                    <div class="param-list">
+                        <div class="param-item">
+                            <span class="param-name">items</span>
+                            <span class="param-desc">Mảng các sản phẩm trong đơn hàng</span>
+                        </div>
+                        <div class="param-item">
+                            <span class="param-name">diaChi</span>
+                            <span class="param-desc">Địa chỉ giao hàng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="method-url">
+                    <span class="method get">GET</span>
+                    <span class="url-path">/orders/:id</span>
+                </div>
+                <div class="endpoint-desc">
+                    Lấy chi tiết đơn hàng
+                </div>
+                <div class="params">
+                    <h4>Parameters:</h4>
+                    <div class="param-list">
+                        <div class="param-item">
+                            <span class="param-name">id</span>
+                            <span class="param-desc">ID của đơn hàng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Sona - API Documentation</p>
+        </div>
+    </footer>
+
+    <script src="/html-css/script.js"></script>
+    <script>
+        function tryEndpoint(path) {
+            const baseUrl = 'http://localhost:3000/api';
+            const fullUrl = baseUrl + path;
+            
+            // Open in new tab with formatted JSON
+            window.open(fullUrl, '_blank');
+            
+            // Also show a notification
+            alert(`Opening: ${fullUrl}\n\nĐảm bảo backend đang chạy tại localhost:3000`);
+        }
+    </script>
+</body>
+</html>

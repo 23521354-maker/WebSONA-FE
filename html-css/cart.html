@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>Giỏ hàng - Sona</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="../img/LEGO web.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="/img/LEGO web.png">
+    <link rel="stylesheet" href="/html-css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -260,8 +260,8 @@
                         </div>
                     </div>
                     <div class="logo">
-                        <a href="index.html">
-                            <img src="../img/sona-logo.png" alt="Sona Logo">
+                        <a href="/html-css/index.html">
+                            <img src="/img/sona-logo.png" alt="Sona Logo">
                         </a>
                     </div>
                 </div>
@@ -296,8 +296,8 @@
                 </tbody>
             </table>
             <div class="cart-actions">
-                <button class="cart-action-btn">Cập nhật giỏ hàng</button>
-                <button class="cart-action-btn">Tiếp tục mua sắm</button>
+                <button class="cart-action-btn" onclick="updateCart()">Cập nhật giỏ hàng</button>
+                <button class="cart-action-btn" onclick="continueShopping()">Tiếp tục mua sắm</button>
             </div>
         </div>
 
@@ -328,7 +328,7 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="/html-css/script.js"></script>
     <script>
         // Helpers mirrored from script.js but kept local if needed
         function getCart() {
@@ -454,6 +454,14 @@
                 return;
             }
             window.location.href = 'checkout.html';
+        }
+
+        function updateCart() {
+            location.reload();
+        }
+
+        function continueShopping() {
+            window.location.href = '/html-css/index.html';
         }
 
         document.addEventListener('DOMContentLoaded', renderCart);

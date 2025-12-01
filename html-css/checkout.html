@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>Thanh toán - Sona</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="../img/LEGO web.png">
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="/img/LEGO web.png">
+    <link rel="stylesheet" href="/html-css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -332,7 +332,7 @@
 
             <!-- Sản phẩm trong đơn -->
             <div class="products-section">
-                <h2>Sản phẩm trong đơn (1)</h2>
+                <h2 id="orderItemsTitle">Sản phẩm trong đơn (0)</h2>
                 <table class="product-table">
                     <thead>
                         <tr>
@@ -342,18 +342,8 @@
                             <th>Số lượng</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <img src="../img/thinkbook14.png" alt="ThinkPad">
-                            </td>
-                            <td>
-                                <div class="product-name">ThinkPad P16s 2025 (Ultra 7-265H vPro| 32GB RAM| 1TB SSD| RTX Pro 1000)</div>
-                                <div class="product-specs">(CPU: Ultra 7-265H vPro, RAM: 32GB, SSD: 1TB, Card Đồ Họa: RTX Pro 1000)</div>
-                            </td>
-                            <td><strong>58,800,000₫</strong></td>
-                            <td>1</td>
-                        </tr>
+                    <tbody id="orderItemsTbody">
+                        <!-- Products will be loaded from cart -->
                     </tbody>
                 </table>
             </div>
@@ -383,12 +373,106 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="/html-css/script.js"></script>
     <script>
+        // Cart helpers
+        function getCart() {
+            try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; }
+        }
+        function formatVND(n) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(n||0)); }
+
+        // Hydrate cart items with data from backend
+        async function hydrateItem(item) {
+            if (item && item.name && item.image && item.price) return item;
+            try {
+                let p = null;
+                // Try fetch by ID
+                const idRes = await fetch('http://localhost:3000/api/products/' + encodeURIComponent(item.id));
+                if (idRes.ok) {
+                    p = await idRes.json();
+                } else {
+                    // Fallback search
+                    const searchRes = await fetch('http://localhost:3000/api/products/search?q=' + encodeURIComponent(item.id));
+                    if (searchRes.ok) {
+                        const list = await searchRes.json();
+                        if (Array.isArray(list) && list.length) p = list[0];
+                    }
+                }
+                if (p) {
+                    let imgPath = p.HinhAnhChinh || '';
+                    if (imgPath.startsWith('../')) imgPath = imgPath.substring(3);
+                    if (imgPath && !imgPath.startsWith('/')) imgPath = '/' + imgPath;
+                    item.name = p.TenSP || item.name;
+                    item.price = Number(p.GiaBan || item.price || 0);
+                    item.image = imgPath || item.image;
+                    item.cpu = item.cpu || p.CPU || p.TenCPU || '';
+                }
+            } catch {}
+            return item;
+        }
+
+        // Load and render order items
+        async function loadOrderItems() {
+            const tbody = document.getElementById('orderItemsTbody');
+            const titleEl = document.getElementById('orderItemsTitle');
+            const subtotalEl = document.querySelector('.checkout-summary .summary-row .price');
+            const totalEl = document.querySelector('.checkout-summary .summary-row.total .price');
+            
+            let cart = getCart();
+
+            // Empty state
+            if (!cart.length) {
+                tbody.innerHTML = `<tr><td colspan="4" style="padding:24px; text-align:center; color:#666;">Giỏ hàng trống. Hãy thêm sản phẩm trước khi thanh toán.</td></tr>`;
+                titleEl.textContent = 'Sản phẩm trong đơn (0)';
+                if (subtotalEl) subtotalEl.textContent = formatVND(0);
+                if (totalEl) totalEl.textContent = formatVND(0);
+                return;
+            }
+
+            // Hydrate all items
+            const hydrated = await Promise.all(cart.map(hydrateItem));
+            cart = hydrated;
+
+            let subtotal = 0;
+            tbody.innerHTML = cart.map((item, idx) => {
+                const lineTotal = Number(item.price || 0) * Number(item.qty || 1);
+                subtotal += lineTotal;
+                const img = item.image || '/img/legion.png';
+                const name = item.name || ('Sản phẩm #' + item.id);
+                const specs = item.cpu ? `(CPU: ${item.cpu})` : '';
+                return `
+                <tr>
+                    <td>
+                        <img src="${img}" alt="${name}">
+                    </td>
+                    <td>
+                        <div class="product-name">${name}</div>
+                        <div class="product-specs">${specs}</div>
+                    </td>
+                    <td><strong>${formatVND(item.price || 0)}</strong></td>
+                    <td>${item.qty || 1}</td>
+                </tr>`;
+            }).join('');
+
+            titleEl.textContent = `Sản phẩm trong đơn (${cart.length})`;
+            if (subtotalEl) subtotalEl.textContent = formatVND(subtotal);
+            if (totalEl) totalEl.textContent = formatVND(subtotal);
+        }
+
         function confirmOrder() {
+            const cart = getCart();
+            if (!cart.length) {
+                alert('Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi đặt hàng.');
+                return;
+            }
             alert('Đơn hàng của bạn đã được đặt thành công!');
+            // Clear cart after order
+            localStorage.removeItem('cart');
             window.location.href = 'index.html';
         }
+
+        // Load items on page load
+        document.addEventListener('DOMContentLoaded', loadOrderItems);
     </script>
 </body>
 </html>

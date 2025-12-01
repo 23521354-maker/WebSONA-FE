@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Tester - Sona</title>
+    <link rel="icon" type="image/png" href="/img/LEGO web.png">
+    <link rel="stylesheet" href="/html-css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .tester-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        .sidebar {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 24px;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .sidebar h2 {
+            color: #f1f5f9;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        .endpoint-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .endpoint-item {
+            padding: 12px 16px;
+            background: #334155;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .endpoint-item:hover {
+            background: #475569;
+            border-left-color: #3b82f6;
+        }
+        .endpoint-item.active {
+            background: #3b82f6;
+            border-left-color: #60a5fa;
+        }
+        .endpoint-method {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .method-get { background: #10b981; color: white; }
+        .method-post { background: #3b82f6; color: white; }
+        .method-put { background: #f59e0b; color: white; }
+        .method-delete { background: #ef4444; color: white; }
+        
+        .main-panel {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .panel-header {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #334155;
+        }
+        .panel-header h1 {
+            color: #f1f5f9;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .panel-header .subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+        .request-section {
+            margin-bottom: 32px;
+        }
+        .section-title {
+            color: #f1f5f9;
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .input-group {
+            margin-bottom: 16px;
+        }
+        .input-label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #1e293b;
+        }
+        textarea.input-field {
+            min-height: 120px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+        .send-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        .send-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+        }
+        .send-button:active {
+            transform: translateY(0);
+        }
+        .response-section {
+            margin-top: 32px;
+        }
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .status-success {
+            background: #10b981;
+            color: white;
+        }
+        .status-error {
+            background: #ef4444;
+            color: white;
+        }
+        .response-time {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        .response-body {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            max-height: 600px;
+        }
+        .response-body pre {
+            margin: 0;
+            color: #86efac;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        @media (max-width: 992px) {
+            .tester-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="logo">
+                        <a href="index.html">
+                            <img src="../img/sona-logo.png" alt="Sona Logo">
+                        </a>
+                    </div>
+                </div>
+                <div class="header-icons">
+                    <a href="api-docs.html" style="color: white; text-decoration: none; margin-right: 20px;">
+                        <i class="fas fa-book"></i> Docs
+                    </a>
+                    <a href="index.html" style="color: white; text-decoration: none;">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="tester-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2><i class="fas fa-list"></i> Endpoints</h2>
+            <div class="endpoint-list" id="endpointList">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Main Panel -->
+        <div class="main-panel">
+            <div class="panel-header">
+                <h1><i class="fas fa-flask"></i> API Tester</h1>
+                <p class="subtitle">Test API endpoints in real-time</p>
+            </div>
+
+            <!-- Request Section -->
+            <div class="request-section">
+                <div class="section-title">Request</div>
+                
+                <div class="input-group">
+                    <label class="input-label">
+                        <i class="fas fa-link"></i> Endpoint URL
+                    </label>
+                    <input type="text" id="endpointUrl" class="input-field" 
+                           value="http://localhost:3000/api/products"
+                           placeholder="Enter API endpoint URL">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">
+                        <i class="fas fa-cog"></i> Method
+                    </label>
+                    <select id="methodSelect" class="input-field" style="cursor: pointer;">
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+
+                <div class="input-group" id="bodyGroup" style="display: none;">
+                    <label class="input-label">
+                        <i class="fas fa-file-code"></i> Request Body (JSON)
+                    </label>
+                    <textarea id="requestBody" class="input-field" 
+                              placeholder='{"key": "value"}'></textarea>
+                </div>
+
+                <button class="send-button" onclick="sendRequest()">
+                    <i class="fas fa-paper-plane"></i> Send Request
+                </button>
+            </div>
+
+            <!-- Response Section -->
+            <div class="response-section" id="responseSection" style="display: none;">
+                <div class="section-title">Response</div>
+                <div class="response-header">
+                    <span class="status-badge" id="statusBadge"></span>
+                    <span class="response-time" id="responseTime"></span>
+                </div>
+                <div class="response-body">
+                    <pre id="responseBody"></pre>
+                </div>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+                <i class="fas fa-rocket"></i>
+                <p>Select an endpoint from the sidebar or enter a custom URL to test</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/html-css/script.js"></script>
+    <script>
+        const endpoints = [
+            { method: 'GET', path: '/products', name: 'Get All Products' },
+            { method: 'GET', path: '/products/1', name: 'Get Product by ID' },
+            { method: 'GET', path: '/products/flashsale', name: 'Flash Sale Products' },
+            { method: 'GET', path: '/products/bestsellers', name: 'Best Sellers' },
+            { method: 'GET', path: '/products/accessories', name: 'Accessories' },
+            { method: 'GET', path: '/products/search?q=intel', name: 'Search Products' },
+            { method: 'GET', path: '/products/category/1', name: 'Products by Category' },
+            { method: 'POST', path: '/auth/register', name: 'Register User' },
+            { method: 'POST', path: '/auth/login', name: 'Login User' },
+            { method: 'POST', path: '/orders', name: 'Create Order' },
+        ];
+
+        const baseUrl = 'http://localhost:3000/api';
+        let startTime;
+
+        // Populate endpoint list
+        function populateEndpoints() {
+            const list = document.getElementById('endpointList');
+            list.innerHTML = endpoints.map((ep, idx) => `
+                <div class="endpoint-item" onclick="selectEndpoint(${idx})">
+                    <span class="endpoint-method method-${ep.method.toLowerCase()}">${ep.method}</span>
+                    <div style="font-size: 0.9rem; margin-top: 4px;">${ep.name}</div>
+                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px; font-family: monospace;">
+                        ${ep.path}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectEndpoint(index) {
+            const ep = endpoints[index];
+            document.getElementById('endpointUrl').value = baseUrl + ep.path;
+            document.getElementById('methodSelect').value = ep.method;
+            
+            // Show/hide body field based on method
+            const bodyGroup = document.getElementById('bodyGroup');
+            bodyGroup.style.display = ['POST', 'PUT'].includes(ep.method) ? 'block' : 'none';
+            
+            // Set example body for POST/PUT
+            if (ep.method === 'POST' && ep.path.includes('register')) {
+                document.getElementById('requestBody').value = JSON.stringify({
+                    hoTen: "Nguyen Van A",
+                    email: "test@example.com",
+                    matKhau: "password123",
+                    soDienThoai: "0123456789"
+                }, null, 2);
+            } else if (ep.method === 'POST' && ep.path.includes('login')) {
+                document.getElementById('requestBody').value = JSON.stringify({
+                    email: "test@example.com",
+                    matKhau: "password123"
+                }, null, 2);
+            } else if (ep.method === 'POST' && ep.path.includes('orders')) {
+                document.getElementById('requestBody').value = JSON.stringify({
+                    items: [{ id: 1, qty: 2 }],
+                    diaChi: "123 Test Street"
+                }, null, 2);
+            }
+
+            // Highlight selected
+            document.querySelectorAll('.endpoint-item').forEach((el, i) => {
+                el.classList.toggle('active', i === index);
+            });
+        }
+
+        // Handle method change
+        document.getElementById('methodSelect').addEventListener('change', function() {
+            const bodyGroup = document.getElementById('bodyGroup');
+            bodyGroup.style.display = ['POST', 'PUT'].includes(this.value) ? 'block' : 'none';
+        });
+
+        async function sendRequest() {
+            const url = document.getElementById('endpointUrl').value;
+            const method = document.getElementById('methodSelect').value;
+            const body = document.getElementById('requestBody').value;
+
+            const emptyState = document.getElementById('emptyState');
+            const responseSection = document.getElementById('responseSection');
+            
+            emptyState.style.display = 'none';
+            responseSection.style.display = 'block';
+
+            startTime = Date.now();
+
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                if (['POST', 'PUT'].includes(method) && body) {
+                    options.body = body;
+                }
+
+                const response = await fetch(url, options);
+                const responseTime = Date.now() - startTime;
+                
+                let data;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    data = await response.json();
+                } else {
+                    data = await response.text();
+                }
+
+                // Update UI
+                const statusBadge = document.getElementById('statusBadge');
+                statusBadge.textContent = `${response.status} ${response.statusText}`;
+                statusBadge.className = 'status-badge ' + (response.ok ? 'status-success' : 'status-error');
+
+                document.getElementById('responseTime').textContent = `⏱️ ${responseTime}ms`;
+                document.getElementById('responseBody').textContent = 
+                    typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+
+            } catch (error) {
+                const responseTime = Date.now() - startTime;
+                
+                document.getElementById('statusBadge').textContent = 'Error';
+                document.getElementById('statusBadge').className = 'status-badge status-error';
+                document.getElementById('responseTime').textContent = `⏱️ ${responseTime}ms`;
+                document.getElementById('responseBody').textContent = 
+                    `Error: ${error.message}\n\nĐảm bảo backend đang chạy tại localhost:3000`;
+            }
+        }
+
+        // Initialize
+        populateEndpoints();
+    </script>
+</body>
+</html>
