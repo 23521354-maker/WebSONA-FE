@@ -202,6 +202,166 @@
 
     <script src="/html-css/script.js"></script>
     <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        // Category mapping
+        const categoryMap = {
+            'vga': 'DM_VGA',
+            'cpu': 'DM_CPU',
+            'ram': 'DM_RAM',
+            'ssd': 'DM_SSD',
+            'hdd': 'DM_HDD',
+            'mainboard': 'DM_Mainboard',
+            'psu': 'DM_PSU',
+            'case': 'DM_Case',
+            'cooling': 'DM_Cooling',
+            'monitor': 'DM_Monitor',
+            'keyboard': 'DM_Keyboard',
+            'mouse': 'DM_Mouse',
+            'headset': 'DM_Headset',
+            'accessories': 'DM_Accessories'
+        };
+
+        const categoryNames = {
+            'vga': 'VGA - Card đồ họa',
+            'cpu': 'CPU - Bộ vi xử lý',
+            'ram': 'RAM - Bộ nhớ',
+            'ssd': 'SSD - Ổ cứng',
+            'hdd': 'HDD - Ổ cứng',
+            'mainboard': 'Mainboard',
+            'psu': 'Nguồn máy tính',
+            'case': 'Case máy tính',
+            'cooling': 'Tản nhiệt',
+            'monitor': 'Màn hình',
+            'keyboard': 'Bàn phím',
+            'mouse': 'Chuột',
+            'headset': 'Tai nghe',
+            'accessories': 'Phụ kiện khác'
+        };
+
+        // Get category from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryParam = urlParams.get('cat') || 'vga';
+        const categoryId = categoryMap[categoryParam];
+        const categoryName = categoryNames[categoryParam];
+
+        // Format price
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN', { 
+                style: 'currency', 
+                currency: 'VND' 
+            }).format(price);
+        }
+
+        // Calculate discount
+        function calculateDiscount(price) {
+            const discount = Math.floor(Math.random() * 16) + 5;
+            const oldPrice = price / (1 - discount / 100);
+            return {
+                oldPrice: Math.round(oldPrice),
+                discount: discount
+            };
+        }
+
+        // Render product card
+        function renderProductCard(product) {
+            const { oldPrice, discount } = calculateDiscount(product.GiaBan);
+            let imagePath = product.HinhAnhChinh;
+            if (imagePath.startsWith('../')) {
+                imagePath = imagePath.substring(3);
+            }
+            if (!imagePath.startsWith('/')) {
+                imagePath = '/' + imagePath;
+            }
+            return `
+                <div class="product-card">
+                    <a href="/html-css/product.html?id=${product.ID_SP}">
+                        <img src="${imagePath}" alt="${product.TenSP}" onerror="this.src='https://via.placeholder.com/250x200/ddd/999?text=No+Image'">
+                        <h3>${product.TenSP}</h3>
+                        <div class="price">
+                            <span class="current-price">${formatPrice(product.GiaBan)}</span>
+                            <span class="old-price">${formatPrice(oldPrice)}</span>
+                            <span class="discount">-${discount}%</span>
+                        </div>
+                    </a>
+                </div>
+            `;
+        }
+
+        // Load products by category
+        async function loadCategoryProducts() {
+            try {
+                const response = await fetch(`${API_URL}/products/category/${categoryId}`);
+                const products = await response.json();
+                
+                const productList = document.getElementById('productList');
+                const categoryTitle = document.getElementById('categoryTitle');
+                const resultCount = document.querySelector('.result-count');
+                
+                // Update title
+                categoryTitle.textContent = categoryName;
+                
+                if (products.length > 0) {
+                    productList.innerHTML = products.map(renderProductCard).join('');
+                    resultCount.textContent = `Hiển thị 1-${Math.min(12, products.length)} trong ${products.length} sản phẩm`;
+                } else {
+                    productList.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">Không có sản phẩm trong danh mục này.</p>';
+                    resultCount.textContent = 'Hiển thị 0 sản phẩm';
+                }
+            } catch (error) {
+                console.error('Error loading products:', error);
+                document.getElementById('productList').innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">Không thể tải sản phẩm. Vui lòng thử lại sau.</p>';
+            }
+        }
+
+        // Load brands for filter
+        async function loadBrands() {
+            try {
+                const response = await fetch(`${API_URL}/products/category/${categoryId}`);
+                const products = await response.json();
+                
+                // Extract unique brands
+                const brands = [...new Set(products.map(p => p.TenHang).filter(Boolean))];
+                
+                const brandFilterSection = document.querySelector('.filter-section:first-child .filter-options');
+                if (brands.length > 0) {
+                    brandFilterSection.innerHTML = `
+                        <label class="filter-checkbox">
+                            <input type="checkbox" name="brand" value="all" checked>
+                            <span>Tất cả</span>
+                        </label>
+                        ${brands.map(brand => `
+                            <label class="filter-checkbox">
+                                <input type="checkbox" name="brand" value="${brand}">
+                                <span>${brand}</span>
+                            </label>
+                        `).join('')}
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading brands:', error);
+            }
+        }
+
+        // Toggle filter sections
+        document.addEventListener('click', (e) => {
+            const filterTitle = e.target.closest('.filter-title');
+            if (filterTitle) {
+                const section = filterTitle.parentElement;
+                const options = section.querySelector('.filter-options, .price-range-input');
+                section.classList.toggle('collapsed');
+                if (options) {
+                    options.style.display = section.classList.contains('collapsed') ? 'none' : 'block';
+                }
+            }
+        });
+
+        // Load products on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCategoryProducts();
+            loadBrands();
+        });
+
         // Search overlay functionality
         const searchIcon = document.getElementById('searchIcon');
         const searchOverlay = document.getElementById('searchOverlay');
