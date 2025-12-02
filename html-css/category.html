@@ -85,9 +85,9 @@
                     
                     <div class="filter-content" id="filterContent">
                         <!-- Hãng sản xuất -->
-                        <div class="filter-section collapsed">
+                        <div class="filter-section">
                             <h3 class="filter-title">Hãng sản xuất <i class="fas fa-chevron-down"></i></h3>
-                            <div class="filter-options" style="display: none;">
+                            <div class="filter-options" style="display: block;">
                                 <!-- Brands will be dynamically loaded by JavaScript -->
                             </div>
                         </div>
@@ -292,7 +292,7 @@
         async function loadCategoryProducts() {
             try {
                 const response = await fetch(`${API_URL}/products/category/${categoryId}`);
-                const products = await response.json();
+                allProducts = await response.json();
                 
                 const productList = document.getElementById('productList');
                 const categoryTitle = document.getElementById('categoryTitle');
@@ -301,9 +301,9 @@
                 // Update title
                 categoryTitle.textContent = categoryName;
                 
-                if (products.length > 0) {
-                    productList.innerHTML = products.map(renderProductCard).join('');
-                    resultCount.textContent = `Hiển thị 1-${Math.min(12, products.length)} trong ${products.length} sản phẩm`;
+                if (allProducts.length > 0) {
+                    productList.innerHTML = allProducts.map(renderProductCard).join('');
+                    resultCount.textContent = `Hiển thị 1-${Math.min(12, allProducts.length)} trong ${allProducts.length} sản phẩm`;
                 } else {
                     productList.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">Không có sản phẩm trong danh mục này.</p>';
                     resultCount.textContent = 'Hiển thị 0 sản phẩm';
@@ -314,14 +314,21 @@
             }
         }
 
+        // Store all products for filtering
+        let allProducts = [];
+
         // Load brands for filter
         async function loadBrands() {
             try {
                 const response = await fetch(`${API_URL}/products/category/${categoryId}`);
-                const products = await response.json();
+                allProducts = await response.json();
                 
-                // Extract unique brands
-                const brands = [...new Set(products.map(p => p.TenHang).filter(Boolean))];
+                console.log('All products loaded:', allProducts); // Debug
+                
+                // Extract unique brands from products in this category
+                const brands = [...new Set(allProducts.map(p => p.TenHang).filter(Boolean))].sort();
+                
+                console.log('Brands found:', brands); // Debug
                 
                 const brandFilterSection = document.querySelector('.filter-section:first-child .filter-options');
                 if (brands.length > 0) {
@@ -337,29 +344,107 @@
                             </label>
                         `).join('')}
                     `;
+                    
+                    // Add event listeners after creating checkboxes
+                    brandFilterSection.querySelectorAll('input[name="brand"]').forEach(cb => {
+                        cb.addEventListener('change', applyFilters);
+                    });
+                } else {
+                    brandFilterSection.innerHTML = '<p style="padding: 10px; color: #999;">Không có hãng nào</p>';
                 }
             } catch (error) {
                 console.error('Error loading brands:', error);
             }
         }
 
-        // Toggle filter sections
-        document.addEventListener('click', (e) => {
-            const filterTitle = e.target.closest('.filter-title');
-            if (filterTitle) {
-                const section = filterTitle.parentElement;
-                const options = section.querySelector('.filter-options, .price-range-input');
-                section.classList.toggle('collapsed');
-                if (options) {
-                    options.style.display = section.classList.contains('collapsed') ? 'none' : 'block';
+        // Apply filters
+        function applyFilters() {
+            console.log('Apply filters called'); // Debug
+            
+            const allCheckbox = document.querySelector('input[name="brand"][value="all"]');
+            const brandCheckboxes = document.querySelectorAll('input[name="brand"]:not([value="all"])');
+            
+            // Get selected brands
+            const selectedBrands = [];
+            let hasChecked = false;
+            
+            brandCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                    selectedBrands.push(cb.value);
+                    hasChecked = true;
+                }
+            });
+
+            console.log('Selected brands:', selectedBrands); // Debug
+
+            // Handle "Tất cả" checkbox
+            if (allCheckbox) {
+                if (allCheckbox.checked && hasChecked) {
+                    // If user clicked a specific brand, uncheck "Tất cả"
+                    allCheckbox.checked = false;
+                } else if (!hasChecked) {
+                    // If no brands selected, ensure "Tất cả" is checked
+                    allCheckbox.checked = true;
+                }
+                
+                // If "Tất cả" was just checked, uncheck all others
+                if (allCheckbox.checked && event && event.target === allCheckbox) {
+                    brandCheckboxes.forEach(cb => cb.checked = false);
+                    selectedBrands.length = 0;
                 }
             }
-        });
+
+            // Filter products
+            let filteredProducts = allProducts;
+            
+            // Filter by brand if specific brands are selected
+            if (selectedBrands.length > 0) {
+                filteredProducts = allProducts.filter(p => {
+                    const match = selectedBrands.includes(p.TenHang);
+                    console.log(`Product: ${p.TenSP}, Brand: ${p.TenHang}, Match: ${match}`); // Debug
+                    return match;
+                });
+            }
+
+            console.log('Filtered products count:', filteredProducts.length); // Debug
+
+            // Render filtered products
+            const productList = document.getElementById('productList');
+            const resultCount = document.querySelector('.result-count');
+            
+            if (filteredProducts.length > 0) {
+                productList.innerHTML = filteredProducts.map(renderProductCard).join('');
+                resultCount.textContent = `Hiển thị 1-${Math.min(12, filteredProducts.length)} trong ${filteredProducts.length} sản phẩm`;
+            } else {
+                productList.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #666;">Không tìm thấy sản phẩm phù hợp với bộ lọc.</p>';
+                resultCount.textContent = 'Hiển thị 0 sản phẩm';
+            }
+        }
+
+        // Toggle filter sections
+        function setupFilterToggles() {
+            document.querySelectorAll('.filter-title').forEach(title => {
+                title.addEventListener('click', function() {
+                    const section = this.parentElement;
+                    const options = section.querySelector('.filter-options, .price-range-input');
+                    const isCollapsed = section.classList.contains('collapsed');
+                    
+                    if (isCollapsed) {
+                        section.classList.remove('collapsed');
+                        if (options) options.style.display = 'block';
+                    } else {
+                        section.classList.add('collapsed');
+                        if (options) options.style.display = 'none';
+                    }
+                });
+            });
+        }
 
         // Load products on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCategoryProducts();
-            loadBrands();
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadCategoryProducts();
+            await loadBrands();
+            setupFilterToggles();
         });
 
         // Search overlay functionality

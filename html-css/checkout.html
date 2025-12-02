@@ -276,7 +276,20 @@
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count">1</span>
                     </a>
-                    <a href="login.html"><i class="fas fa-user"></i></a>
+                    <div class="user-menu-wrapper">
+                        <button id="userIcon" class="user-button">
+                            <i class="fas fa-user"></i>
+                            <span id="userName" class="user-name"></span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="account.html" class="dropdown-item">
+                                <i class="fas fa-user-circle"></i> Tài khoản
+                            </a>
+                            <a href="#" class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -291,11 +304,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Họ và tên:</label>
-                        <input type="text" placeholder="Họ và tên" required>
+                        <input type="text" name="customerName" placeholder="Họ và tên" required>
                     </div>
                     <div class="form-group">
                         <label>Số điện thoại:</label>
-                        <input type="tel" placeholder="Số điện thoại" required>
+                        <input type="tel" name="customerPhone" placeholder="Số điện thoại" required>
                     </div>
                 </div>
             </div>
@@ -312,11 +325,11 @@
                 <div class="form-row">
                     <div class="form-group full-width">
                         <label>Địa chỉ:</label>
-                        <input type="text" placeholder="Địa chỉ" required>
+                        <input type="text" name="customerAddress" placeholder="Địa chỉ" required>
                     </div>
                     <div class="form-group full-width">
                         <label>Ghi chú:</label>
-                        <textarea placeholder="Ghi chú thêm về đơn hàng của bạn"></textarea>
+                        <textarea name="note" placeholder="Ghi chú thêm về đơn hàng của bạn"></textarea>
                     </div>
                 </div>
             </div>
@@ -375,6 +388,52 @@
 
     <script src="/html-css/script.js"></script>
     <script>
+        // User authentication UI (show name like homepage)
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const userIcon = document.getElementById('userIcon');
+            const userName = document.getElementById('userName');
+            const userDropdown = document.getElementById('userDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (token && user.hoTen) {
+                userName.textContent = user.hoTen;
+                userName.style.display = 'inline';
+            } else {
+                userName.style.display = 'none';
+                if (userIcon) {
+                    userIcon.addEventListener('click', (e) => {
+                        if (!localStorage.getItem('token')) {
+                            e.stopPropagation();
+                            window.location.href = 'login.html';
+                        }
+                    });
+                }
+            }
+
+            if (userIcon && token) {
+                userIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+            }
+            document.addEventListener('click', (e) => {
+                if (userDropdown && !userIcon.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                }
+            });
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    alert('Đã đăng xuất thành công!');
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+
         // Cart helpers
         function getCart() {
             try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; }
@@ -459,16 +518,95 @@
             if (totalEl) totalEl.textContent = formatVND(subtotal);
         }
 
-        function confirmOrder() {
+        async function confirmOrder() {
             const cart = getCart();
             if (!cart.length) {
                 alert('Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi đặt hàng.');
                 return;
             }
-            alert('Đơn hàng của bạn đã được đặt thành công!');
-            // Clear cart after order
-            localStorage.removeItem('cart');
-            window.location.href = 'index.html';
+
+            // Get customer info from form
+            const fullName = document.querySelector('input[name="customerName"]')?.value || document.querySelector('input[placeholder="Họ và tên"]')?.value;
+            const phone = document.querySelector('input[name="customerPhone"]')?.value || document.querySelector('input[placeholder="Số điện thoại"]')?.value;
+            const address = document.querySelector('input[name="customerAddress"]')?.value || document.querySelector('input[placeholder="Địa chỉ"]')?.value;
+            const note = document.querySelector('textarea[name="note"]')?.value || document.querySelector('textarea[placeholder*="Ghi chú"]')?.value;
+
+            // Validate required fields
+            if (!fullName || !phone || !address) {
+                alert('Vui lòng điền đầy đủ thông tin họ tên, số điện thoại và địa chỉ!');
+                return;
+            }
+
+            // Check if user is logged in
+            const token = localStorage.getItem('token');
+            if (!token) {
+                if (confirm('Bạn cần đăng nhập để đặt hàng. Chuyển đến trang đăng nhập?')) {
+                    window.location.href = 'login.html';
+                }
+                return;
+            }
+
+            try {
+                // Prepare order data
+                const orderData = {
+                    items: cart,
+                    customerInfo: {
+                        name: fullName,
+                        phone: phone,
+                        address: address
+                    },
+                    paymentMethod: 'bank_transfer',
+                    note: note || ''
+                };
+
+                // Call API to create order
+                const response = await fetch('http://localhost:3000/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                // Check if response is valid JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Server trả về dữ liệu không hợp lệ');
+                }
+
+                const result = await response.json();
+
+                if (response.status === 401 || response.status === 403) {
+                    // Token expired or invalid
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                if (response.ok && result.success) {
+                    alert('Đơn hàng của bạn đã được đặt thành công!\nMã đơn hàng: ' + result.orderId);
+                    // Clear cart after successful order
+                    localStorage.removeItem('cart');
+                    // Redirect to account page to view orders
+                    window.location.href = 'account.html';
+                } else {
+                    throw new Error(result.message || 'Không thể tạo đơn hàng');
+                }
+            } catch (error) {
+                console.error('Error creating order:', error);
+                
+                if (error.message.includes('JSON')) {
+                    alert('Lỗi kết nối với server. Vui lòng đăng nhập lại!');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                } else {
+                    alert('Có lỗi xảy ra khi đặt hàng: ' + error.message + '\nVui lòng thử lại sau.');
+                }
+            }
         }
 
         // Load items on page load

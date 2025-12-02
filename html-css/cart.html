@@ -271,7 +271,20 @@
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count">1</span>
                     </a>
-                    <a href="login.html"><i class="fas fa-user"></i></a>
+                    <div class="user-menu-wrapper">
+                        <button id="userIcon" class="user-button">
+                            <i class="fas fa-user"></i>
+                            <span id="userName" class="user-name"></span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="account.html" class="dropdown-item">
+                                <i class="fas fa-user-circle"></i> Tài khoản
+                            </a>
+                            <a href="#" class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -330,6 +343,52 @@
 
     <script src="/html-css/script.js"></script>
     <script>
+        // User authentication UI (show name like homepage)
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const userIcon = document.getElementById('userIcon');
+            const userName = document.getElementById('userName');
+            const userDropdown = document.getElementById('userDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (token && user.hoTen) {
+                userName.textContent = user.hoTen;
+                userName.style.display = 'inline';
+            } else {
+                userName.style.display = 'none';
+                if (userIcon) {
+                    userIcon.addEventListener('click', (e) => {
+                        if (!localStorage.getItem('token')) {
+                            e.stopPropagation();
+                            window.location.href = 'login.html';
+                        }
+                    });
+                }
+            }
+
+            if (userIcon && token) {
+                userIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle('active');
+                });
+            }
+            document.addEventListener('click', (e) => {
+                if (userDropdown && !userIcon.contains(e.target)) {
+                    userDropdown.classList.remove('active');
+                }
+            });
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    alert('Đã đăng xuất thành công!');
+                    window.location.href = 'login.html';
+                });
+            }
+        });
+
         // Helpers mirrored from script.js but kept local if needed
         function getCart() {
             try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; }
