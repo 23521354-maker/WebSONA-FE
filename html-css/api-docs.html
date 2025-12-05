@@ -3,504 +3,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Documentation - Sona</title>
-    <link rel="icon" type="image/png" href="/img/LEGO web.png">
-    <link rel="stylesheet" href="/html-css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>API Documentation - SONA</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            background: #f5f7fa;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding: 0;
         }
-        .docs-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
+        .container {
+            max-width: 100%;
+            margin: 0;
+            background: #1a1a1a;
+            min-height: 100vh;
         }
-        .docs-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
             color: white;
-            padding: 60px 40px;
-            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 3px solid #ff0000;
+            box-shadow: 0 2px 10px rgba(255, 0, 0, 0.3);
+        }
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            color: #ccc;
+        }
+        .content {
+            padding: 40px;
+            background: #1a1a1a;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .api-endpoint {
             margin-bottom: 40px;
-            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
-        }
-        .docs-header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 16px;
-            font-weight: 700;
-        }
-        .docs-header p {
-            font-size: 1.1rem;
-            opacity: 0.95;
-            margin-bottom: 24px;
-        }
-        .base-url {
-            background: rgba(255,255,255,0.2);
-            padding: 12px 20px;
+            border-left: 4px solid #ff0000;
+            padding-left: 20px;
+            background: #2a2a2a;
+            padding: 20px;
             border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            display: inline-block;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.1);
         }
-        .endpoint-section {
-            background: white;
-            border-radius: 12px;
-            padding: 32px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        }
-        .endpoint-section h2 {
-            color: #2d3748;
-            font-size: 1.8rem;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 3px solid #667eea;
-        }
-        .endpoint {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 24px;
-            margin-bottom: 24px;
-            transition: all 0.3s;
-        }
-        .endpoint:hover {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-color: #667eea;
-        }
-        .method-url {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
+        .api-endpoint h2 {
+            color: #ff0000;
+            font-size: 1.8em;
+            margin-bottom: 10px;
         }
         .method {
-            padding: 6px 16px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .method.get {
-            background: #48bb78;
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 5px;
             color: white;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 0.9em;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
         .method.post {
-            background: #4299e1;
-            color: white;
+            background: linear-gradient(135deg, #ff6600 0%, #cc5200 100%);
         }
-        .method.put {
-            background: #ed8936;
-            color: white;
+        .method.get {
+            background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
         }
         .method.delete {
-            background: #f56565;
-            color: white;
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
         }
-        .url-path {
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            color: #2d3748;
-            flex: 1;
-            min-width: 200px;
+        .endpoint-url {
+            background: #0a0a0a;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            overflow-x: auto;
+            font-size: 0.95em;
+            color: #0f0;
+            border: 1px solid #333;
         }
-        .endpoint-desc {
-            color: #4a5568;
-            margin-bottom: 16px;
+        .description {
+            margin: 15px 0;
             line-height: 1.6;
+            color: #ccc;
         }
         .params, .response {
-            margin-top: 16px;
+            margin: 15px 0;
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #333;
         }
         .params h4, .response h4 {
-            color: #2d3748;
-            font-size: 0.95rem;
-            margin-bottom: 12px;
-            font-weight: 600;
+            color: #ff0000;
+            margin-bottom: 10px;
+            font-size: 1.1em;
         }
-        .param-list {
-            background: white;
-            border-radius: 6px;
-            padding: 16px;
-            border: 1px solid #e2e8f0;
+        .params table, .response table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
         }
-        .param-item {
-            display: flex;
-            gap: 12px;
-            padding: 8px 0;
-            border-bottom: 1px solid #edf2f7;
+        .params table th, .params table td,
+        .response table th, .response table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+            color: #ccc;
         }
-        .param-item:last-child {
-            border-bottom: none;
-        }
-        .param-name {
-            font-family: 'Courier New', monospace;
-            color: #667eea;
-            font-weight: 600;
-            min-width: 120px;
-        }
-        .param-desc {
-            color: #4a5568;
-            flex: 1;
-        }
-        .response-example {
-            background: #1a202c;
-            color: #68d391;
-            padding: 16px;
-            border-radius: 6px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-            line-height: 1.6;
-        }
-        .try-button {
-            background: #667eea;
+        .params table th, .response table th {
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 12px;
         }
-        .try-button:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
+        code {
+            background: #0a0a0a;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+            color: #0f0;
+            border: 1px solid #333;
         }
-        .nav-links {
-            background: white;
+        .code-block {
+            background: #0a0a0a;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            border: 1px solid #333;
+        }
+        .success {
+            color: #27ae60;
+        }
+        .error {
+            color: #e74c3c;
+        }
+        footer {
+            background: #0a0a0a;
             padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: center;
+            color: #888;
+            font-size: 0.95em;
+            border-top: 2px solid #ff0000;
         }
-        .nav-links a {
-            color: #667eea;
+        .note {
+            background: #2a1a1a;
+            border-left: 4px solid #ff0000;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #ccc;
+        }
+        .note strong {
+            color: #ff0000;
+        }
+        .nav-link {
+            color: #ff0000;
             text-decoration: none;
-            margin-right: 24px;
-            font-weight: 600;
-            transition: color 0.2s;
+            margin-right: 20px;
+            transition: all 0.3s;
         }
-        .nav-links a:hover {
-            color: #764ba2;
+        .nav-link:hover {
+            color: #ff3333;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <div class="logo">
-                        <a href="index.html">
-                            <img src="../img/sona-logo.png" alt="Sona Logo">
-                        </a>
-                    </div>
+    <div class="container">
+        <header>
+            <h1>SONA API Documentation</h1>
+            <p>Order Management System - Complete API Reference</p>
+            <p style="margin-top: 20px;">
+                <a href="api-tester.html" class="nav-link">API Tester</a>
+                <a href="index.html" class="nav-link">Back to Website</a>
+            </p>
+        </header>
+        <div class="content">
+            <!-- Authentication Endpoint -->
+            <div class="api-endpoint">
+                <h2><span class="method post">POST</span> /api/auth/login</h2>
+                <div class="endpoint-url">/api/auth/login</div>
+                <div class="description">
+                    User login and receive JWT token. This token will be used for subsequent authenticated requests.
                 </div>
-                <div class="header-icons">
-                    <a href="index.html" style="color: white; text-decoration: none; margin-right: 20px;">
-                        <i class="fas fa-home"></i> Trang chủ
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="docs-container">
-        <div class="docs-header">
-            <h1><i class="fas fa-book"></i> API Documentation</h1>
-            <p>Tài liệu API cho hệ thống quản lý sản phẩm Sona</p>
-            <div class="base-url">
-                <strong>Base URL:</strong> http://localhost:3000/api
-            </div>
-        </div>
-
-        <div class="nav-links">
-            <a href="#products">Products</a>
-            <a href="#auth">Authentication</a>
-            <a href="#orders">Orders</a>
-        </div>
-
-        <!-- Products API -->
-        <div class="endpoint-section" id="products">
-            <h2><i class="fas fa-box"></i> Products API</h2>
-
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method get">GET</span>
-                    <span class="url-path">/products</span>
-                </div>
-                <div class="endpoint-desc">
-                    Lấy danh sách tất cả sản phẩm
+                <div class="params">
+                    <h4>📤 Request Body</h4>
+                    <table>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><code>username</code></td>
+                            <td>string</td>
+                            <td>Username (required)</td>
+                        </tr>
+                        <tr>
+                            <td><code>password</code></td>
+                            <td>string</td>
+                            <td>Password (required)</td>
+                        </tr>
+                    </table>
                 </div>
                 <div class="response">
-                    <h4>Response Example:</h4>
-                    <pre class="response-example">[
-  {
-    "ID_SP": 1,
-    "TenSP": "Intel core i5 14600KF",
-    "GiaBan": 5600000,
-    "HinhAnhChinh": "img/Sanpham/intel-core-i5-14600kf.webp",
-    "TenDM": "CPU",
-    "TenHang": "Intel"
+                    <h4>📥 Response (Success)</h4>
+                    <div class="code-block">{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJJRF9VIjoiVTE3NjM3Mjk4MDEzNDAiLCJUZW5ETiI6InNvbmhvYW5nIiwiVmFpVHJvIjoidXNlciIsImlhdCI6MTczMzQ3NTg2MSwiZXhwIjoxNzMzNTYyMjYxfQ.kZMr_wXYzHGjN5KvLmQ8xY9FqP6tJ3bN7sR2aD4fE8g",
+  "user": {
+    "ID_U": "U1763729801340",
+    "TenDN": "sonhoang",
+    "Email": "son@example.com",
+    "HoTen": "Hồ Xuân Sơn",
+    "VaiTro": "user"
   }
-]</pre>
+}
+
+Note: Token expires in 24 hours. Include in Authorization header as:
+Authorization: Bearer {token}</div>
                 </div>
-                <button class="try-button" onclick="tryEndpoint('/products')">
-                    <i class="fas fa-play"></i> Thử ngay
-                </button>
             </div>
 
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method get">GET</span>
-                    <span class="url-path">/products/:id</span>
-                </div>
-                <div class="endpoint-desc">
-                    Lấy chi tiết một sản phẩm theo ID
+            <!-- Create Order -->
+            <div class="api-endpoint">
+                <h2><span class="method post">POST</span> /api/orders</h2>
+                <div class="endpoint-url">/api/orders</div>
+                <div class="description">
+                    Create a new order. Requires JWT token in Authorization header. Order ID is auto-generated sequentially (DH001, DH002, etc.).
                 </div>
                 <div class="params">
-                    <h4>Parameters:</h4>
-                    <div class="param-list">
-                        <div class="param-item">
-                            <span class="param-name">id</span>
-                            <span class="param-desc">ID của sản phẩm (path parameter)</span>
-                        </div>
-                    </div>
+                    <h4>📤 Request Body</h4>
+                    <table>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><code>HoTen</code></td>
+                            <td>string</td>
+                            <td>Recipient full name (required)</td>
+                        </tr>
+                        <tr>
+                            <td><code>SDT</code></td>
+                            <td>string</td>
+                            <td>Phone number (required)</td>
+                        </tr>
+                        <tr>
+                            <td><code>DiaChi</code></td>
+                            <td>string</td>
+                            <td>Delivery address (required)</td>
+                        </tr>
+                        <tr>
+                            <td><code>items</code></td>
+                            <td>array</td>
+                            <td>Array of products [{ID_SP, SoLuong, DonGia, ThanhTien}] (required)</td>
+                        </tr>
+                        <tr>
+                            <td><code>TongTien</code></td>
+                            <td>number</td>
+                            <td>Total order amount (required)</td>
+                        </tr>
+                    </table>
                 </div>
                 <div class="response">
-                    <h4>Response Example:</h4>
-                    <pre class="response-example">{
-  "ID_SP": 1,
-  "TenSP": "Intel core i5 14600KF",
-  "GiaBan": 5600000,
-  "HinhAnhChinh": "img/Sanpham/intel-core-i5-14600kf.webp",
-  "ID_DM": 1,
-  "TenDM": "CPU",
-  "TenHang": "Intel",
-  "CPU": "Intel Core i5-14600KF"
-}</pre>
+                    <h4>📥 Response (Success)</h4>
+                    <div class="code-block">{
+  "success": true,
+  "message": "Đơn hàng đã được tạo thành công",
+  "order": {
+    "ID_DH": "DH001",
+    "ID_U": "U1763729801340",
+    "HoTen": "Hồ Xuân Sơn",
+    "SDT": "0987654321",
+    "DiaChi": "123 Đường ABC, TP.HCM",
+    "TongTien": 5000000,
+    "TrangThai": "cho_xac_nhan",
+    "NgayDat": "2024-01-01 10:30:00"
+  }
+}</div>
                 </div>
-                <button class="try-button" onclick="tryEndpoint('/products/1')">
-                    <i class="fas fa-play"></i> Thử ngay
-                </button>
+                <div class="note">
+                    <strong>⚠️ Header yêu cầu:</strong> Authorization: Bearer {token}
+                </div>
             </div>
 
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method get">GET</span>
-                    <span class="url-path">/products/flashsale</span>
+            <!-- Get User Orders -->
+            <div class="api-endpoint">
+                <h2><span class="method get">GET</span> /api/orders</h2>
+                <div class="endpoint-url">/api/orders</div>
+                <div class="description">
+                    Retrieve all orders for the current user. User is identified by JWT token.
                 </div>
-                <div class="endpoint-desc">
-                    Lấy danh sách sản phẩm Flash Sale
+                <div class="response">
+                    <h4>📥 Response (Success)</h4>
+                    <div class="code-block">{
+  "success": true,
+  "orders": [
+    {
+      "ID_DH": "DH001",
+      "ID_U": "U1763729801340",
+      "HoTen": "Hồ Xuân Sơn",
+      "SDT": "0987654321",
+      "DiaChi": "123 Đường ABC, TP.HCM",
+      "TongTien": 5000000,
+      "TrangThai": "cho_xac_nhan",
+      "NgayDat": "2024-01-01 10:30:00"
+    }
+  ]
+}</div>
                 </div>
-                <button class="try-button" onclick="tryEndpoint('/products/flashsale')">
-                    <i class="fas fa-play"></i> Thử ngay
-                </button>
+                <div class="note">
+                    <strong>⚠️ Header yêu cầu:</strong> Authorization: Bearer {token}
+                </div>
             </div>
 
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method get">GET</span>
-                    <span class="url-path">/products/bestsellers</span>
-                </div>
-                <div class="endpoint-desc">
-                    Lấy danh sách sản phẩm bán chạy nhất
-                </div>
-                <button class="try-button" onclick="tryEndpoint('/products/bestsellers')">
-                    <i class="fas fa-play"></i> Thử ngay
-                </button>
-            </div>
-
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method get">GET</span>
-                    <span class="url-path">/products/accessories</span>
-                </div>
-                <div class="endpoint-desc">
-                    Lấy danh sách phụ kiện
-                </div>
-                <button class="try-button" onclick="tryEndpoint('/products/accessories')">
-                    <i class="fas fa-play"></i> Thử ngay
-                </button>
-            </div>
-
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method get">GET</span>
-                    <span class="url-path">/products/search</span>
-                </div>
-                <div class="endpoint-desc">
-                    Tìm kiếm sản phẩm theo từ khóa
+            <!-- Get Order Detail -->
+            <div class="api-endpoint">
+                <h2><span class="method get">GET</span> /api/orders/:orderId</h2>
+                <div class="endpoint-url">/api/orders/DH001</div>
+                <div class="description">
+                    Get detailed information for a specific order, including all products in the order.
                 </div>
                 <div class="params">
-                    <h4>Query Parameters:</h4>
-                    <div class="param-list">
-                        <div class="param-item">
-                            <span class="param-name">q</span>
-                            <span class="param-desc">Từ khóa tìm kiếm</span>
-                        </div>
-                    </div>
+                    <h4>📋 URL Parameters</h4>
+                    <table>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><code>orderId</code></td>
+                            <td>string</td>
+                            <td>ID đơn hàng (VD: DH001)</td>
+                        </tr>
+                    </table>
                 </div>
-                <button class="try-button" onclick="tryEndpoint('/products/search?q=intel')">
-                    <i class="fas fa-play"></i> Thử ngay
-                </button>
-            </div>
-
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method get">GET</span>
-                    <span class="url-path">/products/category/:categoryId</span>
+                <div class="response">
+                    <h4>📥 Response (Success)</h4>
+                    <div class="code-block">{
+  "success": true,
+  "order": {
+    "ID_DH": "DH001",
+    "ID_U": "U1763729801340",
+    "HoTen": "Hồ Xuân Sơn",
+    "SDT": "0987654321",
+    "DiaChi": "123 Đường ABC, TP.HCM",
+    "TongTien": 5000000,
+    "TrangThai": "cho_xac_nhan",
+    "NgayDat": "2024-01-01 10:30:00",
+    "items": [
+      {
+        "ID_SP": "CPU_001",
+        "TenSP": "Intel Core i7",
+        "SoLuong": 1,
+        "DonGia": 5000000,
+        "ThanhTien": 5000000
+      }
+    ]
+  }
+}</div>
                 </div>
-                <div class="endpoint-desc">
-                    Lấy sản phẩm theo danh mục
-                </div>
-                <div class="params">
-                    <h4>Parameters:</h4>
-                    <div class="param-list">
-                        <div class="param-item">
-                            <span class="param-name">categoryId</span>
-                            <span class="param-desc">ID của danh mục</span>
-                        </div>
-                    </div>
-                </div>
-                <button class="try-button" onclick="tryEndpoint('/products/category/1')">
-                    <i class="fas fa-play"></i> Thử ngay
-                </button>
-            </div>
-        </div>
-
-        <!-- Auth API -->
-        <div class="endpoint-section" id="auth">
-            <h2><i class="fas fa-lock"></i> Authentication API</h2>
-
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method post">POST</span>
-                    <span class="url-path">/auth/register</span>
-                </div>
-                <div class="endpoint-desc">
-                    Đăng ký tài khoản mới
-                </div>
-                <div class="params">
-                    <h4>Request Body:</h4>
-                    <div class="param-list">
-                        <div class="param-item">
-                            <span class="param-name">hoTen</span>
-                            <span class="param-desc">Họ tên người dùng</span>
-                        </div>
-                        <div class="param-item">
-                            <span class="param-name">email</span>
-                            <span class="param-desc">Email</span>
-                        </div>
-                        <div class="param-item">
-                            <span class="param-name">matKhau</span>
-                            <span class="param-desc">Mật khẩu</span>
-                        </div>
-                        <div class="param-item">
-                            <span class="param-name">soDienThoai</span>
-                            <span class="param-desc">Số điện thoại</span>
-                        </div>
-                    </div>
+                <div class="note">
+                    <strong>⚠️ Header yêu cầu:</strong> Authorization: Bearer {token}
                 </div>
             </div>
 
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method post">POST</span>
-                    <span class="url-path">/auth/login</span>
-                </div>
-                <div class="endpoint-desc">
-                    Đăng nhập hệ thống
-                </div>
-                <div class="params">
-                    <h4>Request Body:</h4>
-                    <div class="param-list">
-                        <div class="param-item">
-                            <span class="param-name">email</span>
-                            <span class="param-desc">Email đăng nhập</span>
-                        </div>
-                        <div class="param-item">
-                            <span class="param-name">matKhau</span>
-                            <span class="param-desc">Mật khẩu</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Orders API -->
-        <div class="endpoint-section" id="orders">
-            <h2><i class="fas fa-shopping-cart"></i> Orders API</h2>
-
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method post">POST</span>
-                    <span class="url-path">/orders</span>
-                </div>
-                <div class="endpoint-desc">
-                    Tạo đơn hàng mới
+            <!-- Delete Order -->
+            <div class="api-endpoint">
+                <h2><span class="method delete">DELETE</span> /api/orders/:orderId</h2>
+                <div class="endpoint-url">/api/orders/DH001</div>
+                <div class="description">
+                    Delete an order. Only orders with status "cho_xac_nhan" (pending) can be deleted.
                 </div>
                 <div class="params">
-                    <h4>Request Body:</h4>
-                    <div class="param-list">
-                        <div class="param-item">
-                            <span class="param-name">items</span>
-                            <span class="param-desc">Mảng các sản phẩm trong đơn hàng</span>
-                        </div>
-                        <div class="param-item">
-                            <span class="param-name">diaChi</span>
-                            <span class="param-desc">Địa chỉ giao hàng</span>
-                        </div>
-                    </div>
+                    <h4>📋 URL Parameters</h4>
+                    <table>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><code>orderId</code></td>
+                            <td>string</td>
+                            <td>ID đơn hàng cần xoá</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="response">
+                    <h4>📥 Response (Success)</h4>
+                    <div class="code-block">{
+  "success": true,
+  "message": "Đơn hàng đã được xoá thành công"
+}</div>
+                </div>
+                <div class="note">
+                    <strong>⚠️ Header yêu cầu:</strong> Authorization: Bearer {token}
                 </div>
             </div>
 
-            <div class="endpoint">
-                <div class="method-url">
-                    <span class="method get">GET</span>
-                    <span class="url-path">/orders/:id</span>
-                </div>
-                <div class="endpoint-desc">
-                    Lấy chi tiết đơn hàng
-                </div>
+            <!-- HTTP Status Codes -->
+            <div class="api-endpoint">
+                <h2>🔍 HTTP Status Codes</h2>
                 <div class="params">
-                    <h4>Parameters:</h4>
-                    <div class="param-list">
-                        <div class="param-item">
-                            <span class="param-name">id</span>
-                            <span class="param-desc">ID của đơn hàng</span>
-                        </div>
-                    </div>
+                    <table>
+                        <tr>
+                            <th>Code</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><code>200</code></td>
+                            <td>OK - Request thành công</td>
+                        </tr>
+                        <tr>
+                            <td><code>201</code></td>
+                            <td>Created - Tài nguyên được tạo thành công</td>
+                        </tr>
+                        <tr>
+                            <td><code>400</code></td>
+                            <td>Bad Request - Dữ liệu request không hợp lệ</td>
+                        </tr>
+                        <tr>
+                            <td><code>401</code></td>
+                            <td>Unauthorized - Token không hợp lệ hoặc không được cung cấp</td>
+                        </tr>
+                        <tr>
+                            <td><code>404</code></td>
+                            <td>Not Found - Không tìm thấy tài nguyên</td>
+                        </tr>
+                        <tr>
+                            <td><code>500</code></td>
+                            <td>Internal Server Error - Lỗi máy chủ</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Error Handling -->
+            <div class="api-endpoint">
+                <h2>⚠️ Error Response Format</h2>
+                <div class="response">
+                    <h4>📥 Response (Error)</h4>
+                    <div class="code-block">{
+  "success": false,
+  "message": "Mô tả lỗi",
+  "error": "Chi tiết lỗi (nếu có)"
+}</div>
                 </div>
             </div>
         </div>
+        <footer>
+            <p>SONA Order Management System - API v1.0</p>
+            <p>© 2024 - All rights reserved</p>
+        </footer>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Sona - API Documentation</p>
-        </div>
-    </footer>
-
-    <script src="/html-css/script.js"></script>
-    <script>
-        function tryEndpoint(path) {
-            const baseUrl = 'http://localhost:3000/api';
-            const fullUrl = baseUrl + path;
-            
-            // Open in new tab with formatted JSON
-            window.open(fullUrl, '_blank');
-            
-            // Also show a notification
-            alert(`Opening: ${fullUrl}\n\nĐảm bảo backend đang chạy tại localhost:3000`);
-        }
-    </script>
 </body>
 </html>

@@ -184,6 +184,26 @@
             color: #c62828;
         }
         
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .status-processing {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .status-shipping {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .status-default {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
         .order-total {
             font-weight: 600;
             color: #1a1a1a;
@@ -202,6 +222,23 @@
         
         .view-btn:hover {
             background: #cc0000;
+            transform: translateY(-2px);
+        }
+
+        .delete-btn {
+            background: #999;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-left: 8px;
+        }
+        
+        .delete-btn:hover {
+            background: #666;
             transform: translateY(-2px);
         }
         
@@ -601,13 +638,14 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    const orders = data.orders;
+                    const orders = data.orders || [];
+                    console.log('Orders loaded:', orders);
                     
                     const ordersTable = document.getElementById('ordersTable');
                     const noOrdersMessage = document.getElementById('noOrdersMessage');
                     const tbody = document.getElementById('ordersTableBody');
                     
-                    if (orders.length === 0) {
+                    if (!orders || orders.length === 0) {
                         // Hiển thị thông báo không có đơn hàng
                         ordersTable.style.display = 'none';
                         noOrdersMessage.style.display = 'block';
@@ -616,18 +654,32 @@
                         ordersTable.style.display = 'table';
                         noOrdersMessage.style.display = 'none';
                         
-                        tbody.innerHTML = orders.map(order => `
+                        tbody.innerHTML = orders.map(order => {
+                            const totalFormatted = typeof order.total === 'number' 
+                                ? order.total.toLocaleString('vi-VN') 
+                                : order.total;
+                            
+                            // Check if order status is "chờ xác nhận" (pending)
+                            const isPending = order.status && order.status.toLowerCase().includes('chờ xác nhận');
+                            const actionButtons = isPending
+                                ? `<button class="view-btn" onclick="viewOrder('${order.id}')">XEM</button> <button class="delete-btn" onclick="deleteOrder('${order.id}')">XOÁ</button>`
+                                : `<button class="view-btn" onclick="viewOrder('${order.id}')">XEM</button>`;
+                            
+                            return `
                             <tr>
-                                <td><span class="order-id">#${order.id}</span></td>
-                                <td>${order.date}</td>
-                                <td><span class="order-status ${order.statusClass}">${order.status}</span></td>
-                                <td><span class="order-total">${order.total.toLocaleString('vi-VN')}₫</span> cho ${order.itemCount} mục</td>
-                                <td><button class="view-btn" onclick="viewOrder('${order.id}')">XEM</button></td>
+                                <td><span class="order-id">#${order.id || 'N/A'}</span></td>
+                                <td>${order.date || 'N/A'}</td>
+                                <td><span class="order-status ${order.statusClass || 'status-default'}">${order.status || 'Không xác định'}</span></td>
+                                <td><span class="order-total">${totalFormatted}₫</span> cho ${order.itemCount || 1} mục</td>
+                                <td>${actionButtons}</td>
                             </tr>
-                        `).join('');
+                        `;
+                        }).join('');
                     }
                 } else {
-                    throw new Error('Không thể lấy danh sách đơn hàng');
+                    const errorData = await response.json();
+                    console.error('Error response:', errorData);
+                    throw new Error(errorData.message || 'Không thể lấy danh sách đơn hàng');
                 }
             } catch (error) {
                 console.error('Lỗi khi tải đơn hàng:', error);
@@ -641,8 +693,42 @@
 
         // View order detail
         function viewOrder(orderId) {
-            alert('Xem chi tiết đơn hàng #' + orderId);
-            // TODO: Implement order detail page
+            window.location.href = `order-detail.html?id=${orderId}`;
+        }
+
+        // Delete order (only for pending orders)
+        async function deleteOrder(orderId) {
+            if (!confirm(`Bạn có chắc chắn muốn xoá đơn hàng #${orderId} không?`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Vui lòng đăng nhập lại');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    alert('Xoá đơn hàng thành công!');
+                    // Reload orders list
+                    loadOrders();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message || 'Không thể xoá đơn hàng');
+                }
+            } catch (error) {
+                console.error('Lỗi khi xoá đơn hàng:', error);
+                alert('Có lỗi xảy ra khi xoá đơn hàng');
+            }
         }
 
         // Load addresses

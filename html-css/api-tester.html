@@ -1,443 +1,621 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Tester - Sona</title>
-    <link rel="icon" type="image/png" href="/img/LEGO web.png">
-    <link rel="stylesheet" href="/html-css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>API Tester - SONA</title>
     <style>
-        body {
-            background: #0f172a;
-            color: #e2e8f0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-        .tester-container {
-            max-width: 1400px;
-            margin: 40px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 24px;
-            align-items: start;
-        }
-        .sidebar {
-            background: #1e293b;
-            border-radius: 12px;
-            padding: 24px;
-            position: sticky;
-            top: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        .sidebar h2 {
-            color: #f1f5f9;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-        }
-        .endpoint-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .endpoint-item {
-            padding: 12px 16px;
-            background: #334155;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
-        }
-        .endpoint-item:hover {
-            background: #475569;
-            border-left-color: #3b82f6;
-        }
-        .endpoint-item.active {
-            background: #3b82f6;
-            border-left-color: #60a5fa;
-        }
-        .endpoint-method {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        .method-get { background: #10b981; color: white; }
-        .method-post { background: #3b82f6; color: white; }
-        .method-put { background: #f59e0b; color: white; }
-        .method-delete { background: #ef4444; color: white; }
-        
-        .main-panel {
-            background: #1e293b;
-            border-radius: 12px;
-            padding: 32px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-        .panel-header {
-            margin-bottom: 32px;
-            padding-bottom: 24px;
-            border-bottom: 2px solid #334155;
-        }
-        .panel-header h1 {
-            color: #f1f5f9;
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-        .panel-header .subtitle {
-            color: #94a3b8;
-            font-size: 1rem;
-        }
-        .request-section {
-            margin-bottom: 32px;
-        }
-        .section-title {
-            color: #f1f5f9;
-            font-size: 1.2rem;
-            margin-bottom: 16px;
-            font-weight: 600;
-        }
-        .input-group {
-            margin-bottom: 16px;
-        }
-        .input-label {
-            display: block;
-            color: #cbd5e1;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        .input-field {
-            width: 100%;
-            padding: 12px 16px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            color: #e2e8f0;
-            font-size: 1rem;
-            font-family: 'Courier New', monospace;
-            transition: all 0.2s;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: #3b82f6;
-            background: #1e293b;
-        }
-        textarea.input-field {
-            min-height: 120px;
-            resize: vertical;
-            font-family: 'Courier New', monospace;
-        }
-        .send-button {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            border: none;
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-        }
-        .send-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
-        }
-        .send-button:active {
-            transform: translateY(0);
-        }
-        .response-section {
-            margin-top: 32px;
-        }
-        .response-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .status-badge {
-            padding: 6px 16px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        .status-success {
-            background: #10b981;
-            color: white;
-        }
-        .status-error {
-            background: #ef4444;
-            color: white;
-        }
-        .response-time {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-        .response-body {
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 20px;
-            overflow-x: auto;
-            max-height: 600px;
-        }
-        .response-body pre {
+        * {
             margin: 0;
-            color: #86efac;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .empty-state {
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            padding: 0;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0;
+            background: #1a1a1a;
+            min-height: 100vh;
+        }
+        header {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+            color: white;
+            padding: 30px;
             text-align: center;
-            padding: 60px 20px;
-            color: #64748b;
+            border-bottom: 3px solid #ff0000;
+            box-shadow: 0 2px 10px rgba(255, 0, 0, 0.3);
         }
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 16px;
-            opacity: 0.5;
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
         }
-        @media (max-width: 992px) {
-            .tester-container {
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            color: #ccc;
+        }
+        .nav-link {
+            color: #ff0000;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .nav-link:hover {
+            color: #ff3333;
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+        .content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            background: #1a1a1a;
+        }
+        @media (max-width: 1024px) {
+            .content {
                 grid-template-columns: 1fr;
             }
-            .sidebar {
-                position: static;
-            }
+        }
+        .panel {
+            border: 2px solid #ff0000;
+            border-radius: 8px;
+            padding: 20px;
+            background: #2a2a2a;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.1);
+        }
+        .panel h2 {
+            color: #ff0000;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ff0000;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #fff;
+            font-weight: 600;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 1em;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            color: white;
+            flex: 1;
+            border: 1px solid #ff0000;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+            background: linear-gradient(135deg, #ff3333 0%, #ff0000 100%);
+        }
+        .btn-secondary {
+            background: #333;
+            color: #fff;
+            flex: 1;
+            border: 1px solid #555;
+        }
+        .btn-secondary:hover {
+            background: #444;
+        }
+        .response-panel {
+            margin-top: 20px;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 20px;
+            background: #1a2a1a;
+        }
+        .response-panel h3 {
+            color: #00ff00;
+            margin-bottom: 15px;
+        }
+        .response-content {
+            background: #0a0a0a;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+            line-height: 1.5;
+            color: #0f0;
+        }
+        .error {
+            background: #2a1a1a;
+            border-color: #ff0000;
+        }
+        .error h3 {
+            color: #ff0000;
+        }
+        .error .response-content {
+            color: #ff6666;
+        }
+        .success {
+            background: #1a2a1a;
+            border-color: #00ff00;
+        }
+        .test-buttons {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+        .test-buttons h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .test-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .test-btn:hover {
+            background: #2980b9;
+            transform: translateX(5px);
+        }
+        .info-box {
+            background: #2a1a1a;
+            border-left: 4px solid #ff0000;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            color: #ccc;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+        .status-ok {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <div class="logo">
-                        <a href="index.html">
-                            <img src="../img/sona-logo.png" alt="Sona Logo">
-                        </a>
-                    </div>
-                </div>
-                <div class="header-icons">
-                    <a href="api-docs.html" style="color: white; text-decoration: none; margin-right: 20px;">
-                        <i class="fas fa-book"></i> Docs
-                    </a>
-                    <a href="index.html" style="color: white; text-decoration: none;">
-                        <i class="fas fa-home"></i> Home
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
+    <div class="container">
+        <header>
+            <h1>SONA API Tester</h1>
+            <p>Test API endpoints easily and efficiently</p>
+            <p style="margin-top: 15px;">
+                <a href="api-docs.html" class="nav-link">API Docs</a>
+                <a href="index.html" class="nav-link">Home</a>
+            </p>
+        </header>
 
-    <div class="tester-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <h2><i class="fas fa-list"></i> Endpoints</h2>
-            <div class="endpoint-list" id="endpointList">
-                <!-- Will be populated by JavaScript -->
-            </div>
-        </div>
-
-        <!-- Main Panel -->
-        <div class="main-panel">
-            <div class="panel-header">
-                <h1><i class="fas fa-flask"></i> API Tester</h1>
-                <p class="subtitle">Test API endpoints in real-time</p>
+        <div class="content">
+            <!-- Login Panel -->
+            <div class="panel">
+                <h2>🔐 Login</h2>
+                <div class="info-box">
+                    Login to get JWT token
+                </div>
+                <div class="form-group">
+                    <label>Username:</label>
+                    <input type="text" id="loginUsername" placeholder="e.g: sonhoang" value="sonhoang">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="loginPassword" placeholder="Enter password" value="123456">
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="login()">🔓 Login</button>
+                    <button class="btn-secondary" onclick="clearLoginForm()">Clear</button>
+                </div>
+                <div id="loginResponse"></div>
             </div>
 
-            <!-- Request Section -->
-            <div class="request-section">
-                <div class="section-title">Request</div>
-                
-                <div class="input-group">
-                    <label class="input-label">
-                        <i class="fas fa-link"></i> Endpoint URL
-                    </label>
-                    <input type="text" id="endpointUrl" class="input-field" 
-                           value="http://localhost:3000/api/products"
-                           placeholder="Enter API endpoint URL">
+            <!-- Create Order Panel -->
+            <div class="panel">
+                <h2>📝 Create Order</h2>
+                <div class="info-box">
+                    Requires token from login
                 </div>
-
-                <div class="input-group">
-                    <label class="input-label">
-                        <i class="fas fa-cog"></i> Method
-                    </label>
-                    <select id="methodSelect" class="input-field" style="cursor: pointer;">
-                        <option value="GET">GET</option>
-                        <option value="POST">POST</option>
-                        <option value="PUT">PUT</option>
-                        <option value="DELETE">DELETE</option>
-                    </select>
+                <div class="form-group">
+                    <label>Token:</label>
+                    <input type="text" id="createOrderToken" placeholder="Paste token here">
                 </div>
-
-                <div class="input-group" id="bodyGroup" style="display: none;">
-                    <label class="input-label">
-                        <i class="fas fa-file-code"></i> Request Body (JSON)
-                    </label>
-                    <textarea id="requestBody" class="input-field" 
-                              placeholder='{"key": "value"}'></textarea>
+                <div class="form-group">
+                    <label>Recipient Name:</label>
+                    <input type="text" id="createOrderName" placeholder="e.g: John Doe" value="Hồ Xuân Sơn">
                 </div>
-
-                <button class="send-button" onclick="sendRequest()">
-                    <i class="fas fa-paper-plane"></i> Send Request
-                </button>
+                <div class="form-group">
+                    <label>Phone Number:</label>
+                    <input type="text" id="createOrderPhone" placeholder="e.g: 0987654321" value="0987654321">
+                </div>
+                <div class="form-group">
+                    <label>Address:</label>
+                    <input type="text" id="createOrderAddress" placeholder="e.g: 123 Main St, City" value="123 Đường ABC, TP.HCM">
+                </div>
+                <div class="form-group">
+                    <label>Items (JSON):</label>
+                    <textarea id="createOrderItems" placeholder='[{"ID_SP": "CPU_001", "SoLuong": 1, "DonGia": 5000000, "ThanhTien": 5000000}]'>[{"ID_SP": "CPU_001", "SoLuong": 1, "DonGia": 5000000, "ThanhTien": 5000000}]</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Total Amount:</label>
+                    <input type="number" id="createOrderTotal" placeholder="e.g: 5000000" value="5000000">
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="createOrder()">✅ Create Order</button>
+                    <button class="btn-secondary" onclick="clearCreateOrderForm()">Clear</button>
+                </div>
+                <div id="createOrderResponse"></div>
             </div>
 
-            <!-- Response Section -->
-            <div class="response-section" id="responseSection" style="display: none;">
-                <div class="section-title">Response</div>
-                <div class="response-header">
-                    <span class="status-badge" id="statusBadge"></span>
-                    <span class="response-time" id="responseTime"></span>
+            <!-- Get Orders Panel -->
+            <div class="panel">
+                <h2>📋 Get Orders List</h2>
+                <div class="info-box">
+                    Display all orders for current user
                 </div>
-                <div class="response-body">
-                    <pre id="responseBody"></pre>
+                <div class="form-group">
+                    <label>Token:</label>
+                    <input type="text" id="getOrdersToken" placeholder="Paste token here">
                 </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="getOrders()">🔍 Get Orders</button>
+                    <button class="btn-secondary" onclick="clearGetOrdersResponse()">Clear</button>
+                </div>
+                <div id="getOrdersResponse"></div>
             </div>
 
-            <div class="empty-state" id="emptyState">
-                <i class="fas fa-rocket"></i>
-                <p>Select an endpoint from the sidebar or enter a custom URL to test</p>
+            <!-- Get Order Detail Panel -->
+            <div class="panel">
+                <h2>🔎 Get Order Details</h2>
+                <div class="info-box">
+                    Get detailed information for a specific order (including products)
+                </div>
+                <div class="form-group">
+                    <label>Token:</label>
+                    <input type="text" id="getDetailToken" placeholder="Paste token here">
+                </div>
+                <div class="form-group">
+                    <label>Order ID:</label>
+                    <input type="text" id="getDetailOrderId" placeholder="e.g: DH001" value="DH001">
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="getOrderDetail()">📄 Get Details</button>
+                    <button class="btn-secondary" onclick="clearGetDetailResponse()">Clear</button>
+                </div>
+                <div id="getDetailResponse"></div>
+            </div>
+
+            <!-- Delete Order Panel -->
+            <div class="panel">
+                <h2>🗑️ Delete Order</h2>
+                <div class="info-box">
+                    Can only delete orders with "cho_xac_nhan" (pending) status
+                </div>
+                <div class="form-group">
+                    <label>Token:</label>
+                    <input type="text" id="deleteOrderToken" placeholder="Paste token here">
+                </div>
+                <div class="form-group">
+                    <label>Order ID:</label>
+                    <input type="text" id="deleteOrderId" placeholder="e.g: DH001" value="DH001">
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="deleteOrder()" style="background: linear-gradient(135deg, #cc0000 0%, #990000 100%);">❌ Delete</button>
+                    <button class="btn-secondary" onclick="clearDeleteResponse()">Clear</button>
+                </div>
+                <div id="deleteResponse"></div>
             </div>
         </div>
     </div>
 
-    <script src="/html-css/script.js"></script>
     <script>
-        const endpoints = [
-            { method: 'GET', path: '/products', name: 'Get All Products' },
-            { method: 'GET', path: '/products/1', name: 'Get Product by ID' },
-            { method: 'GET', path: '/products/flashsale', name: 'Flash Sale Products' },
-            { method: 'GET', path: '/products/bestsellers', name: 'Best Sellers' },
-            { method: 'GET', path: '/products/accessories', name: 'Accessories' },
-            { method: 'GET', path: '/products/search?q=intel', name: 'Search Products' },
-            { method: 'GET', path: '/products/category/1', name: 'Products by Category' },
-            { method: 'POST', path: '/auth/register', name: 'Register User' },
-            { method: 'POST', path: '/auth/login', name: 'Login User' },
-            { method: 'POST', path: '/orders', name: 'Create Order' },
-        ];
+        const API_URL = 'http://localhost:3000/api';
 
-        const baseUrl = 'http://localhost:3000/api';
-        let startTime;
+        // Login
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const responseDiv = document.getElementById('loginResponse');
 
-        // Populate endpoint list
-        function populateEndpoints() {
-            const list = document.getElementById('endpointList');
-            list.innerHTML = endpoints.map((ep, idx) => `
-                <div class="endpoint-item" onclick="selectEndpoint(${idx})">
-                    <span class="endpoint-method method-${ep.method.toLowerCase()}">${ep.method}</span>
-                    <div style="font-size: 0.9rem; margin-top: 4px;">${ep.name}</div>
-                    <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px; font-family: monospace;">
-                        ${ep.path}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function selectEndpoint(index) {
-            const ep = endpoints[index];
-            document.getElementById('endpointUrl').value = baseUrl + ep.path;
-            document.getElementById('methodSelect').value = ep.method;
-            
-            // Show/hide body field based on method
-            const bodyGroup = document.getElementById('bodyGroup');
-            bodyGroup.style.display = ['POST', 'PUT'].includes(ep.method) ? 'block' : 'none';
-            
-            // Set example body for POST/PUT
-            if (ep.method === 'POST' && ep.path.includes('register')) {
-                document.getElementById('requestBody').value = JSON.stringify({
-                    hoTen: "Nguyen Van A",
-                    email: "test@example.com",
-                    matKhau: "password123",
-                    soDienThoai: "0123456789"
-                }, null, 2);
-            } else if (ep.method === 'POST' && ep.path.includes('login')) {
-                document.getElementById('requestBody').value = JSON.stringify({
-                    email: "test@example.com",
-                    matKhau: "password123"
-                }, null, 2);
-            } else if (ep.method === 'POST' && ep.path.includes('orders')) {
-                document.getElementById('requestBody').value = JSON.stringify({
-                    items: [{ id: 1, qty: 2 }],
-                    diaChi: "123 Test Street"
-                }, null, 2);
+            if (!username || !password) {
+                showError(responseDiv, 'Please enter username and password');
+                return;
             }
-
-            // Highlight selected
-            document.querySelectorAll('.endpoint-item').forEach((el, i) => {
-                el.classList.toggle('active', i === index);
-            });
-        }
-
-        // Handle method change
-        document.getElementById('methodSelect').addEventListener('change', function() {
-            const bodyGroup = document.getElementById('bodyGroup');
-            bodyGroup.style.display = ['POST', 'PUT'].includes(this.value) ? 'block' : 'none';
-        });
-
-        async function sendRequest() {
-            const url = document.getElementById('endpointUrl').value;
-            const method = document.getElementById('methodSelect').value;
-            const body = document.getElementById('requestBody').value;
-
-            const emptyState = document.getElementById('emptyState');
-            const responseSection = document.getElementById('responseSection');
-            
-            emptyState.style.display = 'none';
-            responseSection.style.display = 'block';
-
-            startTime = Date.now();
 
             try {
-                const options = {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                };
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
 
-                if (['POST', 'PUT'].includes(method) && body) {
-                    options.body = body;
-                }
-
-                const response = await fetch(url, options);
-                const responseTime = Date.now() - startTime;
+                const data = await response.json();
                 
-                let data;
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    data = await response.json();
+                console.log('Login response:', data); // Debug log
+
+                if (response.ok && data.success) {
+                    // Token is inside data.data.token, not data.token
+                    const token = data.data ? data.data.token : data.token;
+                    const user = data.data ? data.data.user : data.user;
+                    console.log('Token received:', token); // Debug log
+                    
+                    // Copy token to other panels
+                    const createOrderTokenEl = document.getElementById('createOrderToken');
+                    const getOrdersTokenEl = document.getElementById('getOrdersToken');
+                    const getDetailTokenEl = document.getElementById('getDetailToken');
+                    const deleteOrderTokenEl = document.getElementById('deleteOrderToken');
+                    
+                    if (createOrderTokenEl) createOrderTokenEl.value = token;
+                    if (getOrdersTokenEl) getOrdersTokenEl.value = token;
+                    if (getDetailTokenEl) getDetailTokenEl.value = token;
+                    if (deleteOrderTokenEl) deleteOrderTokenEl.value = token;
+                    
+                    console.log('Token filled to all fields'); // Debug log
+
+                    showSuccess(responseDiv, 'Login successful!\n\nToken: ' + token + '\n\nUser: ' + JSON.stringify(user, null, 2));
                 } else {
-                    data = await response.text();
+                    showError(responseDiv, data.message || 'Login failed');
                 }
-
-                // Update UI
-                const statusBadge = document.getElementById('statusBadge');
-                statusBadge.textContent = `${response.status} ${response.statusText}`;
-                statusBadge.className = 'status-badge ' + (response.ok ? 'status-success' : 'status-error');
-
-                document.getElementById('responseTime').textContent = `⏱️ ${responseTime}ms`;
-                document.getElementById('responseBody').textContent = 
-                    typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
-
             } catch (error) {
-                const responseTime = Date.now() - startTime;
-                
-                document.getElementById('statusBadge').textContent = 'Error';
-                document.getElementById('statusBadge').className = 'status-badge status-error';
-                document.getElementById('responseTime').textContent = `⏱️ ${responseTime}ms`;
-                document.getElementById('responseBody').textContent = 
-                    `Error: ${error.message}\n\nĐảm bảo backend đang chạy tại localhost:3000`;
+                console.error('Login error:', error); // Debug log
+                showError(responseDiv, 'Connection error: ' + error.message);
+            }
+        }
+        // Create Order
+        async function createOrder() {
+            const token = document.getElementById('createOrderToken').value;
+            const name = document.getElementById('createOrderName').value;
+            const phone = document.getElementById('createOrderPhone').value;
+            const address = document.getElementById('createOrderAddress').value;
+            const itemsStr = document.getElementById('createOrderItems').value;
+            const total = document.getElementById('createOrderTotal').value;
+            const responseDiv = document.getElementById('createOrderResponse');
+
+            if (!token || !name || !phone || !address || !itemsStr || !total) {
+                showError(responseDiv, 'Please fill all fields');
+                return;
+            }
+
+            try {
+                const items = JSON.parse(itemsStr);
+
+                const response = await fetch(`${API_URL}/orders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        HoTen: name,
+                        SDT: phone,
+                        DiaChi: address,
+                        items: items,
+                        TongTien: parseInt(total)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showSuccess(responseDiv, JSON.stringify(data, null, 2));
+                } else {
+                    showError(responseDiv, data.message || 'Failed to create order');
+                }
+            } catch (error) {
+                showError(responseDiv, 'Error: ' + error.message);
             }
         }
 
-        // Initialize
-        populateEndpoints();
+        // Get Orders
+        async function getOrders() {
+            const token = document.getElementById('getOrdersToken').value;
+            const responseDiv = document.getElementById('getOrdersResponse');
+
+            if (!token) {
+                showError(responseDiv, 'Please enter token');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/orders`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showSuccess(responseDiv, JSON.stringify(data, null, 2));
+                } else {
+                    showError(responseDiv, data.message || 'Failed to get orders');
+                }
+            } catch (error) {
+                showError(responseDiv, 'Error: ' + error.message);
+            }
+        }
+
+        // Get Order Detail
+        async function getOrderDetail() {
+            const token = document.getElementById('getDetailToken').value;
+            const orderId = document.getElementById('getDetailOrderId').value;
+            const responseDiv = document.getElementById('getDetailResponse');
+
+            if (!token || !orderId) {
+                showError(responseDiv, 'Please enter token and order ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/orders/${orderId}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showSuccess(responseDiv, JSON.stringify(data, null, 2));
+                } else {
+                    showError(responseDiv, data.message || 'Failed to get order detail');
+                }
+            } catch (error) {
+                showError(responseDiv, 'Error: ' + error.message);
+            }
+        }
+
+        // Delete Order
+        async function deleteOrder() {
+            const token = document.getElementById('deleteOrderToken').value;
+            const orderId = document.getElementById('deleteOrderId').value;
+            const responseDiv = document.getElementById('deleteResponse');
+
+            if (!token || !orderId) {
+                showError(responseDiv, 'Please enter token and order ID');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this order?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/orders/${orderId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showSuccess(responseDiv, JSON.stringify(data, null, 2));
+                } else {
+                    showError(responseDiv, data.message || 'Failed to delete order');
+                }
+            } catch (error) {
+                showError(responseDiv, 'Error: ' + error.message);
+            }
+        }
+
+        // Helper functions
+        function showSuccess(element, message) {
+            element.innerHTML = `
+                <div class="response-panel success">
+                    <h3>✅ Success</h3>
+                    <div class="response-content">${escapeHtml(message)}</div>
+                </div>
+            `;
+        }
+
+        function showError(element, message) {
+            element.innerHTML = `
+                <div class="response-panel error">
+                    <h3>❌ Error</h3>
+                    <div class="response-content">${escapeHtml(message)}</div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function clearLoginForm() {
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginResponse').innerHTML = '';
+        }
+
+        function clearCreateOrderForm() {
+            document.getElementById('createOrderToken').value = '';
+            document.getElementById('createOrderName').value = '';
+            document.getElementById('createOrderPhone').value = '';
+            document.getElementById('createOrderAddress').value = '';
+            document.getElementById('createOrderItems').value = '';
+            document.getElementById('createOrderTotal').value = '';
+            document.getElementById('createOrderResponse').innerHTML = '';
+        }
+
+        function clearGetOrdersResponse() {
+            document.getElementById('getOrdersToken').value = '';
+            document.getElementById('getOrdersResponse').innerHTML = '';
+        }
+
+        function clearGetDetailResponse() {
+            document.getElementById('getDetailToken').value = '';
+            document.getElementById('getDetailOrderId').value = '';
+            document.getElementById('getDetailResponse').innerHTML = '';
+        }
+
+        function clearDeleteResponse() {
+            document.getElementById('deleteOrderToken').value = '';
+            document.getElementById('deleteOrderId').value = '';
+            document.getElementById('deleteResponse').innerHTML = '';
+        }
     </script>
 </body>
 </html>

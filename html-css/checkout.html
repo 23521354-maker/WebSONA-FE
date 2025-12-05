@@ -477,7 +477,22 @@
             const subtotalEl = document.querySelector('.checkout-summary .summary-row .price');
             const totalEl = document.querySelector('.checkout-summary .summary-row.total .price');
             
-            let cart = getCart();
+            // Check if user came from "Buy Now" button (session storage)
+            let cart = [];
+            const buyNowItem = sessionStorage.getItem('buyNowItem');
+            
+            if (buyNowItem) {
+                // Use only buy now item, ignore cart
+                try {
+                    cart = [JSON.parse(buyNowItem)];
+                    sessionStorage.removeItem('buyNowItem'); // Clear after use
+                } catch (e) {
+                    cart = getCart();
+                }
+            } else {
+                // Use normal cart
+                cart = getCart();
+            }
 
             // Empty state
             if (!cart.length) {
@@ -494,7 +509,7 @@
 
             let subtotal = 0;
             tbody.innerHTML = cart.map((item, idx) => {
-                const lineTotal = Number(item.price || 0) * Number(item.qty || 1);
+                const lineTotal = Number(item.price || 0) * Number(item.qty || item.quantity || 1);
                 subtotal += lineTotal;
                 const img = item.image || '/img/legion.png';
                 const name = item.name || ('Sản phẩm #' + item.id);
@@ -509,7 +524,7 @@
                         <div class="product-specs">${specs}</div>
                     </td>
                     <td><strong>${formatVND(item.price || 0)}</strong></td>
-                    <td>${item.qty || 1}</td>
+                    <td>${item.qty || item.quantity || 1}</td>
                 </tr>`;
             }).join('');
 
@@ -519,7 +534,22 @@
         }
 
         async function confirmOrder() {
-            const cart = getCart();
+            // Check if user came from "Buy Now" button (session storage)
+            let cart = [];
+            const buyNowItem = sessionStorage.getItem('buyNowItem');
+            
+            if (buyNowItem) {
+                // Use only buy now item
+                try {
+                    cart = [JSON.parse(buyNowItem)];
+                } catch (e) {
+                    cart = getCart();
+                }
+            } else {
+                // Use normal cart
+                cart = getCart();
+            }
+            
             if (!cart.length) {
                 alert('Giỏ hàng trống! Vui lòng thêm sản phẩm trước khi đặt hàng.');
                 return;

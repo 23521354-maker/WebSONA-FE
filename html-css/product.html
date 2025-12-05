@@ -465,39 +465,8 @@
             <!-- Related Products -->
             <div class="related-products">
                 <h2>Có thể bạn quan tâm</h2>
-                <div class="product-grid">
-                    <div class="product-card">
-                        <img src="../img/ảnh legion.png" alt="Legion Pro 5">
-                        <h3>Legion Pro 5 2025 R9000P (Black)(R9-9955HX| 32GB...</h3>
-                        <div class="price">
-                            <span class="current-price">40,900,000₫</span>
-                            <span class="old-price">42,000,000₫</span>
-                        </div>
-                    </div>
-                    <div class="product-card">
-                        <img src="../img/thinkbookx.png" alt="Legion Pro 5">
-                        <h3>Legion Pro 5 2025 R9000P (Black)(R9-9955HX| 32GB...</h3>
-                        <div class="price">
-                            <span class="current-price">50,900,000₫</span>
-                            <span class="old-price">54,900,000₫</span>
-                        </div>
-                    </div>
-                    <div class="product-card">
-                        <img src="../img/thinkbook14.png" alt="Legion Pro 5">
-                        <h3>Legion Pro 5 2025 R9000P (Black)(R9-9955HX| 32GB...</h3>
-                        <div class="price">
-                            <span class="current-price">48,300,000₫</span>
-                            <span class="old-price">50,200,000₫</span>
-                        </div>
-                    </div>
-                    <div class="product-card">
-                        <img src="../img/legion.png" alt="Legion Pro 5">
-                        <h3>Legion Pro 5 2025 R9000P (White)(R9-9955HX| 32GB...</h3>
-                        <div class="price">
-                            <span class="current-price">45,300,000₫</span>
-                            <span class="old-price">46,500,000₫</span>
-                        </div>
-                    </div>
+                <div class="product-grid" id="relatedProductsContainer">
+                    <!-- Products will be loaded from database -->
                 </div>
             </div>
         </div>
@@ -525,6 +494,74 @@
 
     <script src="/html-css/script.js"></script>
     <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        // Format giá tiền
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN', { 
+                style: 'currency', 
+                currency: 'VND' 
+            }).format(price);
+        }
+
+        // Tính phần trăm giảm giá
+        function calculateDiscount(price) {
+            const discount = Math.floor(Math.random() * 16) + 5; // 5-20%
+            const oldPrice = price / (1 - discount / 100);
+            return {
+                oldPrice: Math.round(oldPrice),
+                discount: discount
+            };
+        }
+
+        // Render product card
+        function renderProductCard(product) {
+            const { oldPrice, discount } = calculateDiscount(product.GiaBan);
+            let imagePath = product.HinhAnhChinh;
+            if (imagePath.startsWith('../')) {
+                imagePath = imagePath.substring(3);
+            }
+            if (!imagePath.startsWith('/')) {
+                imagePath = '/' + imagePath;
+            }
+            return `
+                <div class="product-card">
+                    <a href="/html-css/product.html?id=${product.ID_SP}">
+                        <img src="${imagePath}" alt="${product.TenSP}" onerror="this.src='https://via.placeholder.com/250x200/ddd/999?text=No+Image'">
+                        <h3>${product.TenSP}</h3>
+                        <div class="price">
+                            <span class="current-price">${formatPrice(product.GiaBan)}</span>
+                            <span class="old-price">${formatPrice(oldPrice)}</span>
+                            <span class="discount">-${discount}%</span>
+                        </div>
+                    </a>
+                </div>
+            `;
+        }
+
+        // Load related products
+        async function loadRelatedProducts() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const currentProductId = params.get('id');
+                
+                const response = await fetch(`${API_URL}/products?limit=8`);
+                const allProducts = await response.json();
+                
+                // Filter out current product
+                const filteredProducts = allProducts.filter(p => p.ID_SP !== currentProductId);
+                
+                const container = document.getElementById('relatedProductsContainer');
+                if (filteredProducts.length > 0) {
+                    container.innerHTML = filteredProducts.slice(0, 4).map(renderProductCard).join('');
+                }
+            } catch (error) {
+                console.error('Error loading related products:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadRelatedProducts);
+        
         // Load product details to build dynamic breadcrumb
         (function() {
             const API_URL = 'http://localhost:3000/api';
@@ -663,9 +700,32 @@
         }
 
         if (buyNowBtn) {
-            buyNowBtn.addEventListener('click', () => {
-                // Redirect to checkout or cart page as desired
-                window.location.href = '/html-css/cart.html';
+            buyNowBtn.addEventListener('click', async () => {
+                if (!productId2) return alert('Thiếu mã sản phẩm');
+                try {
+                    // Get current product info from page
+                    const productName = document.querySelector('.product-info h1')?.textContent || 'Sản phẩm';
+                    const priceText = document.querySelector('.current-price')?.textContent || '0₫';
+                    const price = parseInt(priceText.replace(/[^\d]/g, '')) || 0;
+                    
+                    // Create temporary buy now item (not added to persistent cart)
+                    const buyNowItem = {
+                        id: productId2,
+                        name: productName,
+                        price: price,
+                        quantity: 1,
+                        image: document.getElementById('mainImage')?.src || ''
+                    };
+                    
+                    // Save to sessionStorage for checkout page (cleared when browser closes)
+                    sessionStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));
+                    
+                    // Redirect to checkout
+                    window.location.href = '/html-css/checkout.html';
+                } catch (e) {
+                    console.error('Error:', e);
+                    alert('Không thể tiến hành mua ngay');
+                }
             });
         }
     </script>
