@@ -6,7 +6,7 @@
 const API_URL_DEV = 'http://localhost:3000/api';
 
 // Production (Render)
-const API_URL_PROD = 'https://sona-api.onrender.com/api';
+const API_URL_PROD = 'https://websona-be-3.onrender.com';
 
 // Auto-detect environment
 const API_URL = window.location.hostname === 'localhost' 
