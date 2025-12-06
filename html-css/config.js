@@ -3,7 +3,7 @@
 // Thay đổi URL này khi deploy sang Vercel/Render
 
 // Development
-const API_URL_DEV = 'http://localhost:3000/api';
+const API_URL_DEV = 'https://websona-be-3.onrender.com';
 
 // Production (Render)
 const API_URL_PROD = 'https://websona-be-3.onrender.com';
