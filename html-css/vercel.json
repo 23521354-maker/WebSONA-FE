@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "buildCommand": "echo 'No build needed for static site'",
+  "outputDirectory": ".",
+  "routes": [
+    {
+      "src": "/api-docs.html",
+      "dest": "/api-docs.html"
+    },
+    {
+      "src": "/api-tester.html",
+      "dest": "/api-tester.html"
+    },
+    {
+      "src": "/(.*)\\.html",
+      "dest": "/$1.html"
+    },
+    {
+      "src": "/(.*)\\.css",
+      "dest": "/$1.css"
+    },
+    {
+      "src": "/(.*)\\.js",
+      "dest": "/$1.js"
+    },
+    {
+      "src": "/img/(.*)",
+      "dest": "/img/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}

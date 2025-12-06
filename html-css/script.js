@@ -77,12 +77,12 @@ async function addToCartItemById(productId) {
     try {
         // First, try by ID
         let p = null;
-        const idRes = await fetch('http://localhost:3000/api/products/' + encodeURIComponent(productId));
+        const idRes = await fetch(API_URL + '/products/' + encodeURIComponent(productId));
         if (idRes.ok) {
             p = await idRes.json();
         } else {
             // Fallback: search by code/name if productId is not numeric
-            const searchRes = await fetch('http://localhost:3000/api/products/search?q=' + encodeURIComponent(productId));
+            const searchRes = await fetch(API_URL + '/products/search?q=' + encodeURIComponent(productId));
             if (searchRes.ok) {
                 const list = await searchRes.json();
                 if (Array.isArray(list) && list.length) {

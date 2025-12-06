@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="/img/LEGO web.png">
     <link rel="stylesheet" href="/html-css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/html-css/config.js"></script>
     <style>
         .account-page {
             background: #f0f2f5;
@@ -590,7 +591,7 @@
             }
 
             try {
-                const response = await fetch('http://localhost:3000/api/auth/me', {
+                const response = await fetch(API_URL.replace('/api', '') + '/api/auth/me', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -630,7 +631,7 @@
             if (!token) return;
 
             try {
-                const response = await fetch('http://localhost:3000/api/orders', {
+                const response = await fetch(API_URL.replace('/api', '') + '/api/orders', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -656,7 +657,7 @@
                         
                         tbody.innerHTML = orders.map(order => {
                             const totalFormatted = typeof order.total === 'number' 
-                                ? order.total.toLocaleString('vi-VN') 
+                                ? (order.total / 10).toLocaleString('vi-VN') 
                                 : order.total;
                             
                             // Check if order status is "chờ xác nhận" (pending)
@@ -710,7 +711,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:3000/api/orders/${orderId}`, {
+                const response = await fetch(`${API_URL.replace('/api', '')}/api/orders/${orderId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`

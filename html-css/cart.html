@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="/img/LEGO web.png">
     <link rel="stylesheet" href="/html-css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/html-css/config.js"></script>
     <style>
         body {
             background: #f0f2f5;
@@ -416,12 +417,12 @@
                 try {
                     let p = null;
                     // Try fetch by ID
-                    const idRes = await fetch('http://localhost:3000/api/products/' + encodeURIComponent(item.id));
+                    const idRes = await fetch(API_URL + '/products/' + encodeURIComponent(item.id));
                     if (idRes.ok) {
                         p = await idRes.json();
                     } else {
                         // Fallback search
-                        const searchRes = await fetch('http://localhost:3000/api/products/search?q=' + encodeURIComponent(item.id));
+                        const searchRes = await fetch(API_URL + '/products/search?q=' + encodeURIComponent(item.id));
                         if (searchRes.ok) {
                             const list = await searchRes.json();
                             if (Array.isArray(list) && list.length) p = list[0];
