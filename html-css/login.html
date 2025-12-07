@@ -253,6 +253,7 @@
         </div>
     </div>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="/html-css/config.js"></script>
     <script>
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
@@ -284,7 +285,7 @@
                 submitBtn.textContent = 'Đang đăng nhập...';
                 
                 try {
-                    const response = await fetch(API_URL.replace('/api', '') + '/api/auth/login', {
+                    const response = await fetch(window.API_URL + '/auth/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

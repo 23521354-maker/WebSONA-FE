@@ -280,6 +280,7 @@
         </div>
     </div>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="/html-css/config.js"></script>
     <script>
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
@@ -329,7 +330,7 @@
                 submitBtn.textContent = 'Đang đăng ký...';
                 
                 try {
-                    const response = await fetch(API_URL.replace('/api', '') + '/api/auth/register', {
+                    const response = await fetch(window.API_URL + '/auth/register', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
