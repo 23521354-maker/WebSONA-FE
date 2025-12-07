@@ -657,7 +657,7 @@
                         
                         tbody.innerHTML = orders.map(order => {
                             const totalFormatted = typeof order.total === 'number' 
-                                ? (order.total / 10).toLocaleString('vi-VN') 
+                                ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total)
                                 : order.total;
                             
                             // Check if order status is "chờ xác nhận" (pending)
@@ -671,7 +671,7 @@
                                 <td><span class="order-id">#${order.id || 'N/A'}</span></td>
                                 <td>${order.date || 'N/A'}</td>
                                 <td><span class="order-status ${order.statusClass || 'status-default'}">${order.status || 'Không xác định'}</span></td>
-                                <td><span class="order-total">${totalFormatted}₫</span> cho ${order.itemCount || 1} mục</td>
+                                <td><span class="order-total">${totalFormatted}</span> cho ${order.itemCount || 1} mục</td>
                                 <td>${actionButtons}</td>
                             </tr>
                         `;
