@@ -544,9 +544,17 @@
             try {
                 const params = new URLSearchParams(window.location.search);
                 const currentProductId = params.get('id');
+                const apiUrl = window.API_URL || 'https://websona-be-3.onrender.com/api';
                 
-                const response = await fetch(`${API_URL}/products?limit=8`);
+                console.log('[product.html] Đang tải sản phẩm liên quan từ:', apiUrl);
+                const response = await fetch(`${apiUrl}/products?limit=8`);
+                
+                if (!response.ok) {
+                    throw new Error(`API lỗi: ${response.status} ${response.statusText}`);
+                }
+                
                 const allProducts = await response.json();
+                console.log('[product.html] Tải được', allProducts.length, 'sản phẩm liên quan');
                 
                 // Filter out current product
                 const filteredProducts = allProducts.filter(p => p.ID_SP !== currentProductId);
@@ -554,9 +562,16 @@
                 const container = document.getElementById('relatedProductsContainer');
                 if (filteredProducts.length > 0) {
                     container.innerHTML = filteredProducts.slice(0, 4).map(renderProductCard).join('');
+                } else {
+                    console.warn('[product.html] Không có sản phẩm liên quan');
                 }
             } catch (error) {
-                console.error('Error loading related products:', error);
+                console.error('[product.html] Lỗi tải sản phẩm liên quan:', {
+                    message: error.message,
+                    apiUrl: window.API_URL,
+                    stack: error.stack
+                });
+                // Không hiển thị lỗi nếu có vấn đề - chỉ để trống phần sản phẩm liên quan
             }
         }
 
@@ -564,7 +579,6 @@
         
         // Load product details to build dynamic breadcrumb
         (function() {
-            const API_URL = 'http://localhost:3000/api';
             const params = new URLSearchParams(window.location.search);
             const productId = params.get('id');
             const bc = document.getElementById('breadcrumbContainer');
@@ -578,9 +592,19 @@
                     return;
                 }
                 try {
-                    const res = await fetch(`${API_URL}/products/${productId}`);
-                    if (!res.ok) throw new Error('Không lấy được sản phẩm');
+                    // Sử dụng window.API_URL từ config.js
+                    const apiUrl = window.API_URL || 'https://websona-be-3.onrender.com/api';
+                    const endpoint = `${apiUrl}/products/${encodeURIComponent(productId)}`;
+                    
+                    console.log('[product.html] Đang tải sản phẩm từ:', endpoint);
+                    const res = await fetch(endpoint);
+                    
+                    if (!res.ok) {
+                        throw new Error(`API trả về lỗi ${res.status}: ${res.statusText}`);
+                    }
+                    
                     const p = await res.json();
+                    console.log('[product.html] Sản phẩm tải thành công:', p.ID_SP);
 
                     // Ensure fields exist: TenDM (category), TenHang (brand), TenSP (name)
                     const catName = p.TenDM || 'Danh mục';
@@ -628,8 +652,24 @@
                         cpuBtn.textContent = cpuName;
                     }
                 } catch (err) {
+                    console.error('[product.html] Lỗi khi tải sản phẩm:', {
+                        message: err.message,
+                        productId: productId,
+                        apiUrl: window.API_URL,
+                        stack: err.stack
+                    });
+                    
+                    // Hiển thị thông báo lỗi cho người dùng
                     bc.innerHTML = '<a href="/">Trang chủ</a> › <span>Chi tiết sản phẩm</span>';
-                    console.error('Breadcrumb load error:', err);
+                    
+                    const errorMsg = document.createElement('div');
+                    errorMsg.style.cssText = 'background:#fee; color:#c33; padding:15px; margin:20px 0; border-radius:8px; text-align:center;';
+                    errorMsg.innerHTML = `
+                        <strong>⚠️ Không thể tải sản phẩm</strong><br>
+                        <small>${err.message || 'Vui lòng kiểm tra kết nối internet và thử lại.'}</small>
+                    `;
+                    const container = document.querySelector('.container');
+                    if (container) container.insertBefore(errorMsg, container.firstChild);
                 }
             }
 
